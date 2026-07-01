@@ -1,0 +1,409 @@
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+using System.Collections;
+
+public class Level1Manager : MonoBehaviour
+{
+    [Header("Tiempo del nivel")]
+    [SerializeField] private float levelDuration = 180f;
+    [SerializeField] private TMP_Text timeText;
+
+    [Header("Tablet")]
+    [SerializeField] private GameObject tabletPanel;
+    [SerializeField] private GameObject noPowerMessagePanel;
+
+    [Header("Tareas")]
+    [SerializeField] private Level1TaskButton[] taskButtons;
+
+    [Header("Temperatura")]
+    [SerializeField] private Slider temperatureSlider;
+    [SerializeField] private float maxTemperature = 100f;
+    [SerializeField] private float temperatureRiseSpeed = 6f;
+    [SerializeField] private float temperatureCoolSpeed = 25f;
+    [SerializeField] private float minHeatEventTime = 8f;
+    [SerializeField] private float maxHeatEventTime = 18f;
+
+    [Header("Generador")]
+    [SerializeField] private float minPowerFailTime = 15f;
+    [SerializeField] private float maxPowerFailTime = 35f;
+    [SerializeField] private float generatorRepairTime = 3f;
+    [SerializeField] private Image generatorProgressImage;
+
+    private bool isRepairingGenerator;
+
+    [Header("Estado")]
+    [SerializeField] private bool levelStarted = true;
+
+    private float currentTime;
+    private float currentTemperature;
+    private float nextHeatEventTimer;
+    private float nextPowerFailTimer;
+
+    private bool isTabletOpen;
+    private bool isPowerOn = true;
+    private bool isCoolingTemperature;
+    private bool isLevelFinished;
+
+    private Level1TaskButton currentChargingTask;
+
+    private void Start()
+    {
+        currentTime = 0f;
+        currentTemperature = 0f;
+
+        ScheduleNextHeatEvent();
+        ScheduleNextPowerFail();
+
+        if (tabletPanel != null)
+        {
+            tabletPanel.SetActive(false);
+        }
+
+        if (noPowerMessagePanel != null)
+        {
+            noPowerMessagePanel.SetActive(false);
+        }
+        
+        if (generatorProgressImage != null)
+        {
+            generatorProgressImage.fillAmount = 0f;
+            generatorProgressImage.gameObject.SetActive(false);
+        }
+
+        for (int i = 0; i < taskButtons.Length; i++)
+        {
+            taskButtons[i].Initialize(this);
+        }
+
+        UpdateTimeUI();
+        UpdateTemperatureUI();
+    }
+
+    private void Update()
+    {
+        if (!levelStarted || isLevelFinished)
+        {
+            return;
+        }
+
+        UpdateLevelTimer();
+        UpdateTemperatureSystem();
+        UpdateGeneratorSystem();
+    }
+
+    private void UpdateLevelTimer()
+    {
+        currentTime += Time.deltaTime;
+
+        UpdateTimeUI();
+
+        if (currentTime >= levelDuration)
+        {
+            LoseLevel("Se acabó el tiempo.");
+        }
+    }
+
+    private void UpdateTemperatureSystem()
+    {
+        nextHeatEventTimer -= Time.deltaTime;
+
+        if (nextHeatEventTimer <= 0f)
+        {
+            currentTemperature += temperatureRiseSpeed * Time.deltaTime;
+        }
+
+        if (isCoolingTemperature)
+        {
+            currentTemperature -= temperatureCoolSpeed * Time.deltaTime;
+
+            if (currentTemperature <= 0f)
+            {
+                currentTemperature = 0f;
+                isCoolingTemperature = false;
+                ScheduleNextHeatEvent();
+            }
+        }
+
+        if (currentTemperature >= maxTemperature)
+        {
+            currentTemperature = maxTemperature;
+            LoseLevel("La temperatura llegó al máximo.");
+        }
+
+        UpdateTemperatureUI();
+    }
+
+    private void UpdateGeneratorSystem()
+    {
+        if (!isPowerOn)
+        {
+            return;
+        }
+
+        nextPowerFailTimer -= Time.deltaTime;
+
+        if (nextPowerFailTimer <= 0f)
+        {
+            TurnPowerOff();
+        }
+    }
+
+    private void ScheduleNextHeatEvent()
+    {
+        nextHeatEventTimer = Random.Range(minHeatEventTime, maxHeatEventTime);
+    }
+
+    private void ScheduleNextPowerFail()
+    {
+        nextPowerFailTimer = Random.Range(minPowerFailTime, maxPowerFailTime);
+    }
+
+    public void OpenTablet()
+    {
+        if (isLevelFinished)
+        {
+            return;
+        }
+
+        if (!isPowerOn)
+        {
+            ShowNoPowerMessage();
+            return;
+        }
+
+        isTabletOpen = true;
+
+        if (tabletPanel != null)
+        {
+            tabletPanel.SetActive(true);
+        }
+
+        if (noPowerMessagePanel != null)
+        {
+            noPowerMessagePanel.SetActive(false);
+        }
+    }
+
+    public void CloseTablet()
+    {
+        isTabletOpen = false;
+
+        CancelCurrentChargingTask();
+
+        if (tabletPanel != null)
+        {
+            tabletPanel.SetActive(false);
+        }
+    }
+
+    public void TryStartTask(Level1TaskButton task)
+    {
+        if (isLevelFinished)
+        {
+            return;
+        }
+
+        if (!isTabletOpen)
+        {
+            return;
+        }
+
+        if (!isPowerOn)
+        {
+            return;
+        }
+
+        if (task.IsCompleted)
+        {
+            return;
+        }
+
+        if (currentChargingTask != null)
+        {
+            return;
+        }
+
+        currentChargingTask = task;
+        task.StartCharge();
+    }
+
+    public void OnTaskCompleted(Level1TaskButton task)
+    {
+        if (currentChargingTask == task)
+        {
+            currentChargingTask = null;
+        }
+
+        CheckWinCondition();
+    }
+
+    private void CancelCurrentChargingTask()
+    {
+        if (currentChargingTask != null)
+        {
+            currentChargingTask.CancelCharge();
+            currentChargingTask = null;
+        }
+    }
+
+    public void UseTemperatureController()
+    {
+        if (isLevelFinished)
+        {
+            return;
+        }
+
+        isCoolingTemperature = true;
+        Debug.Log("Controlador de temperatura activado.");
+    }
+
+    private void TurnPowerOff()
+    {
+        isPowerOn = false;
+
+        CancelCurrentChargingTask();
+
+        if (isTabletOpen)
+        {
+            isTabletOpen = false;
+
+            if (tabletPanel != null)
+            {
+                tabletPanel.SetActive(false);
+            }
+        }
+
+        Debug.Log("El generador se apagó.");
+    }
+
+    public void RepairGenerator()
+    {
+        if (isLevelFinished)
+        {
+            return;
+        }
+
+        if (isPowerOn)
+        {
+            Debug.Log("El generador ya está funcionando.");
+            return;
+        }
+
+        if (isRepairingGenerator)
+        {
+            Debug.Log("El generador ya se está reparando.");
+            return;
+        }
+
+        StartCoroutine(RepairGeneratorRoutine());
+    }
+
+    private IEnumerator RepairGeneratorRoutine()
+    {
+        isRepairingGenerator = true;
+
+        if (generatorProgressImage != null)
+        {
+            generatorProgressImage.fillAmount = 0f;
+            generatorProgressImage.gameObject.SetActive(true);
+        }
+
+        Debug.Log("Reparando generador...");
+
+        float elapsedTime = 0f;
+
+        while (elapsedTime < generatorRepairTime)
+        {
+            elapsedTime += Time.deltaTime;
+
+            if (generatorProgressImage != null)
+            {
+                generatorProgressImage.fillAmount = elapsedTime / generatorRepairTime;
+            }
+
+            yield return null;
+        }
+
+        isPowerOn = true;
+        isRepairingGenerator = false;
+
+        if (generatorProgressImage != null)
+        {
+            generatorProgressImage.fillAmount = 0f;
+            generatorProgressImage.gameObject.SetActive(false);
+        }
+
+        if (noPowerMessagePanel != null)
+        {
+            noPowerMessagePanel.SetActive(false);
+        }
+
+        ScheduleNextPowerFail();
+
+        Debug.Log("Generador reparado. La luz volvió.");
+    }
+
+    private void ShowNoPowerMessage()
+    {
+        if (noPowerMessagePanel != null)
+        {
+            noPowerMessagePanel.SetActive(true);
+        }
+
+        Debug.Log("No hay luz. Repara el generador.");
+    }
+
+    private void CheckWinCondition()
+    {
+        for (int i = 0; i < taskButtons.Length; i++)
+        {
+            if (!taskButtons[i].IsCompleted)
+            {
+                return;
+            }
+        }
+
+        WinLevel();
+    }
+
+    private void WinLevel()
+    {
+        isLevelFinished = true;
+        Debug.Log("Nivel 1 completado.");
+
+        // Aquí luego puedes cargar el nivel 2.
+        // SceneManager.LoadScene("Level2");
+    }
+
+    private void LoseLevel(string reason)
+    {
+        isLevelFinished = true;
+        Debug.Log("Game Over: " + reason);
+
+        // Aquí luego puedes cargar la escena de Game Over.
+        // SceneManager.LoadScene("GameOver");
+    }
+
+    private void UpdateTimeUI()
+    {
+        if (timeText == null)
+        {
+            return;
+        }
+
+        int minutes = Mathf.FloorToInt(currentTime / 60f);
+        int seconds = Mathf.FloorToInt(currentTime % 60f);
+
+        timeText.text = minutes.ToString("00") + ":" + seconds.ToString("00");
+    }
+
+    private void UpdateTemperatureUI()
+    {
+        if (temperatureSlider != null)
+        {
+            temperatureSlider.maxValue = maxTemperature;
+            temperatureSlider.value = currentTemperature;
+        }
+    }
+}
