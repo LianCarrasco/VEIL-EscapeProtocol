@@ -608,7 +608,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Level1TaskButton
   taskID: 4
-  chargeTime: 6
+  chargeTime: 14
   button: {fileID: 114050476}
   progressImage: {fileID: 1136370687}
   buttonText: {fileID: 0}
@@ -1927,7 +1927,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Level1TaskButton
   taskID: 3
-  chargeTime: 5
+  chargeTime: 12
   button: {fileID: 701347286}
   progressImage: {fileID: 257103976}
   buttonText: {fileID: 0}
@@ -2203,7 +2203,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Level1TaskButton
   taskID: 1
-  chargeTime: 4
+  chargeTime: 10
   button: {fileID: 718451773}
   progressImage: {fileID: 1795642886}
   buttonText: {fileID: 0}
@@ -2228,7 +2228,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &801207581
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3300,7 +3300,7 @@ MonoBehaviour:
   maxHeatEventTime: 18
   minPowerFailTime: 15
   maxPowerFailTime: 35
-  generatorRepairTime: 3
+  generatorRepairTime: 10
   generatorProgressImage: {fileID: 228435128}
   levelStarted: 1
 --- !u!1 &1639759224
@@ -3572,7 +3572,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Level1TaskButton
   taskID: 2
-  chargeTime: 5
+  chargeTime: 12
   button: {fileID: 1639818336}
   progressImage: {fileID: 847631271}
   buttonText: {fileID: 0}
