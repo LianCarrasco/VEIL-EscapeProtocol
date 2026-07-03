@@ -1,0 +1,871 @@
+using System.Collections;
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+using UnityEngine.SceneManagement;
+
+public class Level3Manager : MonoBehaviour
+{
+    [Header("Tiempo")]
+    [SerializeField] private float levelDuration = 180f;
+    [SerializeField] private TMP_Text timeText;
+
+    [Header("Batería")]
+    [SerializeField] private Slider batterySlider;
+    [SerializeField] private float maxBattery = 100f;
+    [SerializeField] private float tabletBatteryDrainPerSecond = .25f;
+    [SerializeField] private float closedDoorDrainPerSecond = .6f;
+
+    [Header("Tablet")]
+    [SerializeField] private GameObject tabletPanel;
+    [SerializeField] private GameObject mapPanel;
+    [SerializeField] private GameObject cameraPanel;
+    [SerializeField] private TMP_Text cameraRoomText;
+    [SerializeField] private GameObject soundButtonObject;
+    [SerializeField] private string spawnRoomID = "Spawn";
+
+    [Header("Puertas")]
+    [SerializeField] private RectTransform leftDoorVisual;
+    [SerializeField] private RectTransform rightDoorVisual;
+    [SerializeField] private float doorAnimationTime = 0.6f;
+
+    [SerializeField] private Vector2 leftDoorOpenPosition;
+    [SerializeField] private Vector2 leftDoorClosedPosition;
+
+    [SerializeField] private Vector2 rightDoorOpenPosition;
+    [SerializeField] private Vector2 rightDoorClosedPosition;
+
+    private bool isLeftDoorMoving;
+    private bool isRightDoorMoving;
+    private Coroutine leftDoorCoroutine;
+    private Coroutine rightDoorCoroutine;
+
+    [Header("Luces")]
+    [SerializeField] private GameObject leftLightVisual;
+    [SerializeField] private GameObject rightLightVisual;
+    [SerializeField] private GameObject leftEnemyInHallwayVisual;
+    [SerializeField] private GameObject rightEnemyInHallwayVisual;
+
+    [Header("Generador")]
+    [SerializeField] private GameObject generatorAlertPanel;
+    [SerializeField] private Image generatorRepairProgressImage;
+    [SerializeField] private float generatorRepairTime = 4f;
+    [SerializeField] private float generatorDeathTime = 10f;
+
+    [Header("Enemigos")]
+    [SerializeField] private Level3Enemy[] enemies;
+    [SerializeField] private float hallwayAttackTime = 7f;
+
+    [Header("Muerte visual")]
+    [SerializeField] private float jumpscareDuration = 1.5f;
+
+    private float currentTime;
+    private float currentBattery;
+    private float generatorDamageTimer;
+
+    private bool isTabletOpen;
+    private bool isLeftDoorClosed;
+    private bool isRightDoorClosed;
+    private bool isLeftLightOn;
+    private bool isRightLightOn;
+    private bool isGeneratorDamaged;
+    private bool isRepairingGenerator;
+    private bool isLevelFinished;
+    private bool isJumpscareActive;
+
+    private string currentCameraRoomID;
+    private Level3Enemy enemyAtGenerator;
+
+    public float HallwayAttackTime => hallwayAttackTime;
+
+    private void Start()
+    {
+        currentTime = 0f;
+        currentBattery = maxBattery;
+
+        if (leftDoorVisual != null)
+        {
+            leftDoorVisual.anchoredPosition = leftDoorOpenPosition;
+        }
+
+        if (rightDoorVisual != null)
+        {
+            rightDoorVisual.anchoredPosition = rightDoorOpenPosition;
+        }
+
+        if (tabletPanel != null)
+        {
+            tabletPanel.SetActive(false);
+        }
+
+        if (cameraPanel != null)
+        {
+            cameraPanel.SetActive(false);
+        }
+
+        if (mapPanel != null)
+        {
+            mapPanel.SetActive(true);
+        }
+
+        if (generatorAlertPanel != null)
+        {
+            generatorAlertPanel.SetActive(false);
+        }
+
+        if (generatorRepairProgressImage != null)
+        {
+            generatorRepairProgressImage.fillAmount = 0f;
+            generatorRepairProgressImage.gameObject.SetActive(false);
+        }
+
+        if (leftEnemyInHallwayVisual != null)
+        {
+            leftEnemyInHallwayVisual.SetActive(false);
+        }
+
+        if (rightEnemyInHallwayVisual != null)
+        {
+            rightEnemyInHallwayVisual.SetActive(false);
+        }
+
+        for (int i = 0; i < enemies.Length; i++)
+        {
+            enemies[i].Initialize(this);
+        }
+
+        UpdateTimeUI();
+        UpdateBatteryUI();
+        UpdateDoorVisuals();
+        UpdateLightVisuals();
+    }
+
+    private void Update()
+    {
+        if (isLevelFinished)
+        {
+            return;
+        }
+
+        UpdateLevelTimer();
+        UpdateBatteryDrain();
+        UpdateGeneratorDamageTimer();
+        UpdateEnemies();
+        UpdateEnemyHallwayVisuals();
+    }
+
+    private void UpdateLevelTimer()
+    {
+        currentTime += Time.deltaTime;
+
+        UpdateTimeUI();
+
+        if (currentTime >= levelDuration)
+        {
+            WinGame();
+        }
+    }
+
+    public void StartEnemyJumpscare(Level3Enemy enemy, string reason)
+    {
+        if (isLevelFinished || isJumpscareActive)
+        {
+            return;
+        }
+
+        StartCoroutine(EnemyJumpscareRoutine(enemy, reason));
+    }
+
+    private IEnumerator EnemyJumpscareRoutine(Level3Enemy enemy, string reason)
+    {
+        isJumpscareActive = true;
+        isLevelFinished = true;
+
+        if (tabletPanel != null)
+        {
+            tabletPanel.SetActive(false);
+        }
+
+        if (enemy.JumpscareVisual != null)
+        {
+            enemy.JumpscareVisual.SetActive(true);
+        }
+
+        Debug.Log("Jumpscare de " + enemy.EnemyName);
+
+        yield return new WaitForSeconds(jumpscareDuration);
+
+        Debug.Log("Game Over: " + reason);
+
+        // Luego puedes cargar la escena de Game Over:
+        // SceneManager.LoadScene("GameOver");
+    }
+
+    private bool CanUseDoors()
+    {
+        if (IsBatteryEmpty())
+        {
+            return false;
+        }
+
+        if (isGeneratorDamaged)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private void UpdateBatteryDrain()
+    {
+        if (IsBatteryEmpty())
+        {
+            return;
+        }
+
+        if (isTabletOpen)
+        {
+            ConsumeBattery(tabletBatteryDrainPerSecond * Time.deltaTime);
+        }
+
+        if (isLeftDoorClosed)
+        {
+            ConsumeBattery(closedDoorDrainPerSecond * Time.deltaTime);
+        }
+
+        if (isRightDoorClosed)
+        {
+            ConsumeBattery(closedDoorDrainPerSecond * Time.deltaTime);
+        }
+
+        if (IsBatteryEmpty())
+        {
+            ForcePowerOffActions();
+        }
+    }
+
+    public bool IsDoorClosed(DoorSide side)
+    {
+        if (side == DoorSide.Left)
+        {
+            return isLeftDoorClosed;
+        }
+
+        if (side == DoorSide.Right)
+        {
+            return isRightDoorClosed;
+        }
+
+        return false;
+    }
+    private void UpdateGeneratorDamageTimer()
+    {
+        if (!isGeneratorDamaged || isJumpscareActive)
+        {
+            return;
+        }
+
+        generatorDamageTimer -= Time.deltaTime;
+
+        if (generatorDamageTimer <= 0f)
+        {
+            StartEnemyJumpscare(enemyAtGenerator, "El animatrónico del generador mató al jugador.");
+        }
+    }
+
+
+
+    private void UpdateEnemies()
+    {
+        for (int i = 0; i < enemies.Length; i++)
+        {
+            enemies[i].Tick(Time.deltaTime);
+        }
+    }
+
+    private void ConsumeBattery(float amount)
+    {
+        currentBattery -= amount;
+
+        if (currentBattery < 0f)
+        {
+            currentBattery = 0f;
+        }
+
+        UpdateBatteryUI();
+    }
+
+    private bool IsBatteryEmpty()
+    {
+        return currentBattery <= 0f;
+    }
+
+    private void ForcePowerOffActions()
+    {
+        isTabletOpen = false;
+
+        if (tabletPanel != null)
+        {
+            tabletPanel.SetActive(false);
+        }
+
+        ForceOpenDoors();
+
+        Debug.Log("La batería se agotó. Las puertas se abrieron y ya no puedes usar tablet ni puertas.");
+    }
+
+    public void OpenTablet()
+    {
+        if (isLevelFinished)
+        {
+            return;
+        }
+
+        if (IsBatteryEmpty())
+        {
+            Debug.Log("No hay batería para abrir la tablet.");
+            return;
+        }
+
+        isTabletOpen = true;
+
+        if (tabletPanel != null)
+        {
+            tabletPanel.SetActive(true);
+        }
+
+        if (mapPanel != null)
+        {
+            mapPanel.SetActive(true);
+        }
+
+        if (cameraPanel != null)
+        {
+            cameraPanel.SetActive(false);
+        }
+    }
+
+    public void CloseTablet()
+    {
+        isTabletOpen = false;
+
+        if (tabletPanel != null)
+        {
+            tabletPanel.SetActive(false);
+        }
+    }
+
+    public void OpenCameraRoom(string roomID)
+    {
+        if (!isTabletOpen)
+        {
+            return;
+        }
+
+        if (IsBatteryEmpty())
+        {
+            CloseTablet();
+            return;
+        }
+
+        currentCameraRoomID = roomID;
+
+        if (mapPanel != null)
+        {
+            mapPanel.SetActive(false);
+        }
+
+        if (cameraPanel != null)
+        {
+            cameraPanel.SetActive(true);
+        }
+
+        if (cameraRoomText != null)
+        {
+            cameraRoomText.text = "Cámara: " + roomID;
+        }
+
+        if (soundButtonObject != null)
+        {
+            soundButtonObject.SetActive(roomID != spawnRoomID);
+        }
+
+        Debug.Log("Viendo cámara de habitación: " + roomID);
+    }
+
+    public void BackToMap()
+    {
+        if (!isTabletOpen)
+        {
+            return;
+        }
+
+        if (mapPanel != null)
+        {
+            mapPanel.SetActive(true);
+        }
+
+        if (cameraPanel != null)
+        {
+            cameraPanel.SetActive(false);
+        }
+    }
+
+    public void PlaySoundInCurrentCamera()
+    {
+        if (!isTabletOpen)
+        {
+            return;
+        }
+
+        if (string.IsNullOrEmpty(currentCameraRoomID))
+        {
+            return;
+        }
+
+        if (currentCameraRoomID == spawnRoomID)
+        {
+            Debug.Log("No se puede usar sonido en la habitación Spawn.");
+            return;
+        }
+
+        for (int i = 0; i < enemies.Length; i++)
+        {
+            if (enemies[i].CanMoveToRoomBySound(currentCameraRoomID))
+            {
+                enemies[i].MoveToRoomBySound(currentCameraRoomID);
+                Debug.Log("Sonido usado en: " + currentCameraRoomID);
+                return;
+            }
+        }
+
+        Debug.Log("Sonido usado en " + currentCameraRoomID + ", pero ningún animatrónico puede ir a esa habitación.");
+    }
+
+    public void ToggleLeftDoor()
+    {
+        if (isLevelFinished)
+        {
+            return;
+        }
+
+        if (!CanUseDoors())
+        {
+            Debug.Log("No puedes usar la puerta izquierda ahora.");
+            return;
+        }
+
+        if (isLeftDoorMoving)
+        {
+            return;
+        }
+
+        leftDoorCoroutine = StartCoroutine(AnimateLeftDoor());
+    }
+
+    public void ToggleRightDoor()
+    {
+        if (isLevelFinished)
+        {
+            return;
+        }
+
+        if (!CanUseDoors())
+        {
+            Debug.Log("No puedes usar la puerta derecha ahora.");
+            return;
+        }
+
+        if (isRightDoorMoving)
+        {
+            return;
+        }
+
+        rightDoorCoroutine = StartCoroutine(AnimateRightDoor());
+    }
+
+    private IEnumerator AnimateLeftDoor()
+    {
+        isLeftDoorMoving = true;
+
+        bool closing = !isLeftDoorClosed;
+
+        Vector2 startPosition = leftDoorVisual.anchoredPosition;
+        Vector2 targetPosition = closing ? leftDoorClosedPosition : leftDoorOpenPosition;
+
+        if (closing)
+        {
+            isLeftDoorClosed = true;
+        }
+
+        float elapsedTime = 0f;
+
+        while (elapsedTime < doorAnimationTime)
+        {
+            elapsedTime += Time.deltaTime;
+
+            float percent = elapsedTime / doorAnimationTime;
+
+            leftDoorVisual.anchoredPosition = Vector2.Lerp(startPosition, targetPosition, percent);
+
+            yield return null;
+        }
+
+        leftDoorVisual.anchoredPosition = targetPosition;
+
+        if (!closing)
+        {
+            isLeftDoorClosed = false;
+        }
+        else
+        {
+            PushBackEnemyInHallway(DoorSide.Left);
+        }
+
+        isLeftDoorMoving = false;
+    }
+
+    private IEnumerator AnimateRightDoor()
+    {
+        isRightDoorMoving = true;
+
+        bool closing = !isRightDoorClosed;
+
+        Vector2 startPosition = rightDoorVisual.anchoredPosition;
+        Vector2 targetPosition = closing ? rightDoorClosedPosition : rightDoorOpenPosition;
+
+        if (closing)
+        {
+            isRightDoorClosed = true;
+        }
+
+        float elapsedTime = 0f;
+
+        while (elapsedTime < doorAnimationTime)
+        {
+            elapsedTime += Time.deltaTime;
+
+            float percent = elapsedTime / doorAnimationTime;
+
+            rightDoorVisual.anchoredPosition = Vector2.Lerp(startPosition, targetPosition, percent);
+
+            yield return null;
+        }
+
+        rightDoorVisual.anchoredPosition = targetPosition;
+
+        if (!closing)
+        {
+            isRightDoorClosed = false;
+        }
+        else
+        {
+            PushBackEnemyInHallway(DoorSide.Right);
+        }
+
+        isRightDoorMoving = false;
+    }
+
+    private void ForceOpenDoors()
+    {
+        ForceOpenLeftDoor();
+        ForceOpenRightDoor();
+    }
+
+    private void ForceOpenLeftDoor()
+    {
+        if (leftDoorVisual == null)
+        {
+            return;
+        }
+
+        if (leftDoorCoroutine != null)
+        {
+            StopCoroutine(leftDoorCoroutine);
+        }
+
+        leftDoorCoroutine = StartCoroutine(ForceOpenLeftDoorRoutine());
+    }
+
+    private void ForceOpenRightDoor()
+    {
+        if (rightDoorVisual == null)
+        {
+            return;
+        }
+
+        if (rightDoorCoroutine != null)
+        {
+            StopCoroutine(rightDoorCoroutine);
+        }
+
+        rightDoorCoroutine = StartCoroutine(ForceOpenRightDoorRoutine());
+    }
+
+    private IEnumerator ForceOpenLeftDoorRoutine()
+    {
+        isLeftDoorMoving = true;
+        isLeftDoorClosed = false;
+
+        Vector2 startPosition = leftDoorVisual.anchoredPosition;
+        Vector2 targetPosition = leftDoorOpenPosition;
+
+        float elapsedTime = 0f;
+
+        while (elapsedTime < doorAnimationTime)
+        {
+            elapsedTime += Time.deltaTime;
+
+            float percent = elapsedTime / doorAnimationTime;
+
+            leftDoorVisual.anchoredPosition = Vector2.Lerp(startPosition, targetPosition, percent);
+
+            yield return null;
+        }
+
+        leftDoorVisual.anchoredPosition = targetPosition;
+        isLeftDoorMoving = false;
+    }
+
+    private IEnumerator ForceOpenRightDoorRoutine()
+    {
+        isRightDoorMoving = true;
+        isRightDoorClosed = false;
+
+        Vector2 startPosition = rightDoorVisual.anchoredPosition;
+        Vector2 targetPosition = rightDoorOpenPosition;
+
+        float elapsedTime = 0f;
+
+        while (elapsedTime < doorAnimationTime)
+        {
+            elapsedTime += Time.deltaTime;
+
+            float percent = elapsedTime / doorAnimationTime;
+
+            rightDoorVisual.anchoredPosition = Vector2.Lerp(startPosition, targetPosition, percent);
+
+            yield return null;
+        }
+
+        rightDoorVisual.anchoredPosition = targetPosition;
+        isRightDoorMoving = false;
+    }
+
+    public void ToggleLeftLight()
+    {
+        isLeftLightOn = !isLeftLightOn;
+        UpdateLightVisuals();
+    }
+
+    public void ToggleRightLight()
+    {
+        isRightLightOn = !isRightLightOn;
+        UpdateLightVisuals();
+    }
+
+    private void PushBackEnemyInHallway(DoorSide side)
+    {
+        for (int i = 0; i < enemies.Length; i++)
+        {
+            if (enemies[i].IsInDoorHallway(side))
+            {
+                enemies[i].RetreatFromHallway();
+            }
+        }
+    }
+
+    public void OnEnemyEnteredHallway(Level3Enemy enemy, DoorSide side)
+    {
+        Debug.Log(enemy.EnemyName + " está en el pasillo de la puerta " + side);
+
+        if (IsDoorClosed(side))
+        {
+            Debug.Log(enemy.EnemyName + " encontró la puerta cerrada y retrocedió.");
+            enemy.RetreatFromHallway();
+            UpdateEnemyHallwayVisuals();
+            return;
+        }
+
+        UpdateEnemyHallwayVisuals();
+    }
+
+    private void UpdateEnemyHallwayVisuals()
+    {
+        bool enemyInLeftHallway = false;
+        bool enemyInRightHallway = false;
+
+        for (int i = 0; i < enemies.Length; i++)
+        {
+            if (enemies[i].IsInDoorHallway(DoorSide.Left))
+            {
+                enemyInLeftHallway = true;
+            }
+
+            if (enemies[i].IsInDoorHallway(DoorSide.Right))
+            {
+                enemyInRightHallway = true;
+            }
+        }
+
+        if (leftEnemyInHallwayVisual != null)
+        {
+            leftEnemyInHallwayVisual.SetActive(isLeftLightOn && enemyInLeftHallway);
+        }
+
+        if (rightEnemyInHallwayVisual != null)
+        {
+            rightEnemyInHallwayVisual.SetActive(isRightLightOn && enemyInRightHallway);
+        }
+    }
+
+    public void OnEnemyDamagedGenerator(Level3Enemy enemy)
+    {
+        if (isGeneratorDamaged)
+        {
+            return;
+        }
+
+        enemyAtGenerator = enemy;
+        isGeneratorDamaged = true;
+        generatorDamageTimer = generatorDeathTime;
+
+        ForceOpenDoors();
+
+        if (generatorAlertPanel != null)
+        {
+            generatorAlertPanel.SetActive(true);
+        }
+
+        Debug.Log("Generador dañado. Las puertas se abrieron. Tienes " + generatorDeathTime + " segundos para repararlo.");
+    }
+
+    public void RepairGenerator()
+    {
+        if (!isGeneratorDamaged)
+        {
+            Debug.Log("El generador no está dañado.");
+            return;
+        }
+
+        if (isRepairingGenerator)
+        {
+            Debug.Log("Ya estás reparando el generador.");
+            return;
+        }
+
+        StartCoroutine(RepairGeneratorRoutine());
+    }
+
+    private IEnumerator RepairGeneratorRoutine()
+    {
+        isRepairingGenerator = true;
+
+        if (generatorRepairProgressImage != null)
+        {
+            generatorRepairProgressImage.fillAmount = 0f;
+            generatorRepairProgressImage.gameObject.SetActive(true);
+        }
+
+        float elapsedTime = 0f;
+
+        while (elapsedTime < generatorRepairTime)
+        {
+            elapsedTime += Time.deltaTime;
+
+            if (generatorRepairProgressImage != null)
+            {
+                generatorRepairProgressImage.fillAmount = elapsedTime / generatorRepairTime;
+            }
+
+            yield return null;
+        }
+
+        isRepairingGenerator = false;
+        isGeneratorDamaged = false;
+
+        if (generatorRepairProgressImage != null)
+        {
+            generatorRepairProgressImage.fillAmount = 0f;
+            generatorRepairProgressImage.gameObject.SetActive(false);
+        }
+
+        if (generatorAlertPanel != null)
+        {
+            generatorAlertPanel.SetActive(false);
+        }
+
+        if (enemyAtGenerator != null)
+        {
+            enemyAtGenerator.RetreatAfterGeneratorRepair();
+            enemyAtGenerator = null;
+        }
+
+        Debug.Log("Generador reparado.");
+    }
+
+    private void UpdateDoorVisuals()
+    {
+
+    }
+
+    private void UpdateLightVisuals()
+    {
+        if (leftLightVisual != null)
+        {
+            leftLightVisual.SetActive(isLeftLightOn);
+        }
+
+        if (rightLightVisual != null)
+        {
+            rightLightVisual.SetActive(isRightLightOn);
+        }
+
+        UpdateEnemyHallwayVisuals();
+    }
+
+    private void UpdateTimeUI()
+    {
+        if (timeText == null)
+        {
+            return;
+        }
+
+        int minutes = Mathf.FloorToInt(currentTime / 60f);
+        int seconds = Mathf.FloorToInt(currentTime % 60f);
+
+        timeText.text = minutes.ToString("00") + ":" + seconds.ToString("00");
+    }
+
+    private void UpdateBatteryUI()
+    {
+        if (batterySlider != null)
+        {
+            batterySlider.maxValue = maxBattery;
+            batterySlider.value = currentBattery;
+        }
+    }
+
+    private void WinGame()
+    {
+        isLevelFinished = true;
+
+        Debug.Log("Ganaste el juego.");
+
+        // SceneManager.LoadScene("Win");
+    }
+
+    public void LoseLevel(string reason)
+    {
+        if (isLevelFinished)
+        {
+            return;
+        }
+
+        isLevelFinished = true;
+
+        Debug.Log("Game Over: " + reason);
+
+        // SceneManager.LoadScene("GameOver");
+    }
+}
