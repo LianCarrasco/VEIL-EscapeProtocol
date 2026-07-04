@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class Level1Manager : MonoBehaviour
 {
@@ -370,19 +371,22 @@ public class Level1Manager : MonoBehaviour
     private void WinLevel()
     {
         isLevelFinished = true;
-        Debug.Log("Nivel 1 completado.");
 
-        // Aquí luego puedes cargar el nivel 2.
-        // SceneManager.LoadScene("Level2");
+        Debug.Log("Nivel 1 completado.");
+        SceneManager.LoadScene("Level2");
     }
 
     private void LoseLevel(string reason)
     {
-        isLevelFinished = true;
-        Debug.Log("Game Over: " + reason);
+        if (isLevelFinished)
+        {
+            return;
+        }
 
-        // Aquí luego puedes cargar la escena de Game Over.
-        // SceneManager.LoadScene("GameOver");
+        isLevelFinished = true;
+
+        Debug.Log("Game Over: " + reason);
+        SceneManager.LoadScene("GameOver");
     }
 
     private void UpdateTimeUI()

@@ -136,7 +136,6 @@ public class Level3Manager : MonoBehaviour
 
         UpdateTimeUI();
         UpdateBatteryUI();
-        UpdateDoorVisuals();
         UpdateLightVisuals();
     }
 
@@ -152,6 +151,11 @@ public class Level3Manager : MonoBehaviour
         UpdateGeneratorDamageTimer();
         UpdateEnemies();
         UpdateEnemyHallwayVisuals();
+
+        if (isTabletOpen && cameraPanel != null && cameraPanel.activeSelf)
+        {
+            UpdateCameraEnemyVisuals();
+        }
     }
 
     private void UpdateLevelTimer()
@@ -196,9 +200,7 @@ public class Level3Manager : MonoBehaviour
         yield return new WaitForSeconds(jumpscareDuration);
 
         Debug.Log("Game Over: " + reason);
-
-        // Luego puedes cargar la escena de Game Over:
-        // SceneManager.LoadScene("GameOver");
+        SceneManager.LoadScene("GameOver");
     }
 
     private bool CanUseDoors()
@@ -258,6 +260,30 @@ public class Level3Manager : MonoBehaviour
 
         return false;
     }
+
+    private void UpdateCameraEnemyVisuals()
+    {
+        for (int i = 0; i < enemies.Length; i++)
+        {
+            if (enemies[i].CameraVisual != null)
+            {
+                bool shouldShow = enemies[i].IsInRoom(currentCameraRoomID);
+                enemies[i].CameraVisual.SetActive(shouldShow);
+            }
+        }
+    }
+
+    private void HideAllCameraEnemyVisuals()
+    {
+        for (int i = 0; i < enemies.Length; i++)
+        {
+            if (enemies[i].CameraVisual != null)
+            {
+                enemies[i].CameraVisual.SetActive(false);
+            }
+        }
+    }
+
     private void UpdateGeneratorDamageTimer()
     {
         if (!isGeneratorDamaged || isJumpscareActive)
@@ -282,7 +308,7 @@ public class Level3Manager : MonoBehaviour
             enemies[i].Tick(Time.deltaTime);
         }
     }
-
+    
     private void ConsumeBattery(float amount)
     {
         currentBattery -= amount;
@@ -349,6 +375,8 @@ public class Level3Manager : MonoBehaviour
     {
         isTabletOpen = false;
 
+        HideAllCameraEnemyVisuals();
+
         if (tabletPanel != null)
         {
             tabletPanel.SetActive(false);
@@ -389,6 +417,7 @@ public class Level3Manager : MonoBehaviour
         {
             soundButtonObject.SetActive(roomID != spawnRoomID);
         }
+        UpdateCameraEnemyVisuals();
 
         Debug.Log("Viendo cámara de habitación: " + roomID);
     }
@@ -399,6 +428,8 @@ public class Level3Manager : MonoBehaviour
         {
             return;
         }
+
+        HideAllCameraEnemyVisuals();
 
         if (mapPanel != null)
         {
@@ -804,11 +835,6 @@ public class Level3Manager : MonoBehaviour
         Debug.Log("Generador reparado.");
     }
 
-    private void UpdateDoorVisuals()
-    {
-
-    }
-
     private void UpdateLightVisuals()
     {
         if (leftLightVisual != null)
@@ -851,8 +877,7 @@ public class Level3Manager : MonoBehaviour
         isLevelFinished = true;
 
         Debug.Log("Ganaste el juego.");
-
-        // SceneManager.LoadScene("Win");
+        SceneManager.LoadScene("Win");
     }
 
     public void LoseLevel(string reason)
@@ -865,7 +890,6 @@ public class Level3Manager : MonoBehaviour
         isLevelFinished = true;
 
         Debug.Log("Game Over: " + reason);
-
-        // SceneManager.LoadScene("GameOver");
+        SceneManager.LoadScene("GameOver");
     }
 }

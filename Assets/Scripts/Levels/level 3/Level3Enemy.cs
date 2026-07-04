@@ -39,6 +39,10 @@ public class Level3Enemy : MonoBehaviour
     [Header("Jumpscare")]
     [SerializeField] private GameObject jumpscareVisual;
 
+    [Header("Visuales")]
+    [SerializeField] private GameObject cameraVisual;
+
+    public GameObject CameraVisual => cameraVisual;
     public GameObject JumpscareVisual => jumpscareVisual;
 
     private Level3Manager levelManager;
@@ -90,7 +94,12 @@ public class Level3Enemy : MonoBehaviour
         isInHallway = false;
         isAtGenerator = false;
         isActive = true;
-        
+
+        if (cameraVisual != null)
+        {
+            cameraVisual.SetActive(false);
+        }
+
         if (jumpscareVisual != null)
         {
             jumpscareVisual.SetActive(false);
@@ -164,6 +173,11 @@ public class Level3Enemy : MonoBehaviour
         {
             EnterGenerator();
         }
+    }
+
+    public bool IsInRoom(string roomID)
+    {
+        return CurrentRoomID == roomID && !isInHallway;
     }
 
     private void EnterHallway(DoorSide side)
