@@ -15,6 +15,7 @@ public class ViewController : MonoBehaviour
     [SerializeField] private GameObject leftView;
     [SerializeField] private GameObject rightView;
     [SerializeField] private GameObject backView;
+    [SerializeField] private AnimatronicManager animatronicManager;
 
     [Header("Tablet")]
     [SerializeField] private GameObject tabletPanel;
@@ -146,9 +147,9 @@ public class ViewController : MonoBehaviour
         flashlightOn = !flashlightOn;
         flashlightEffect.SetActive(flashlightOn);
 
-        if (flashlightOn)
+        if (flashlightOn && animatronicManager != null)
         {
-            ScareAnimatronics();
+            animatronicManager.UseFlashlight(currentView);
         }
     }
 
@@ -174,9 +175,10 @@ public class ViewController : MonoBehaviour
     {
         return currentView == RoomView.Central;
     }
-
+    /*
     private void ScareAnimatronics()
     {
         Debug.Log("Linterna activada: aqui se alejaria al animatronico.");
     }
+    */
 }

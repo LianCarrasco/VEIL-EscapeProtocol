@@ -2,7 +2,7 @@
 - Project name: VEIL-EscapeProtocol
 - Unity version: Unity 6000.4.11f1
 - Active game object:
-  - Name: ViewController
+  - Name: BtnCam6
   - Tag: Untagged
-  - Layer: Default
+  - Layer: UI
 <!-- UNITY CODE ASSIST INSTRUCTIONS END -->
