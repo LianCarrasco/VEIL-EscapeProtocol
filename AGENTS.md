@@ -2,7 +2,7 @@
 - Project name: VEIL-EscapeProtocol
 - Unity version: Unity 6000.4.11f1
 - Active game object:
-  - Name: BtnCam6
+  - Name: AnimatronicManager
   - Tag: Untagged
-  - Layer: UI
+  - Layer: Default
 <!-- UNITY CODE ASSIST INSTRUCTIONS END -->

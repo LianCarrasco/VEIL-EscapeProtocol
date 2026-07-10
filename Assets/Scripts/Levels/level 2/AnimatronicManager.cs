@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Collections;
 
 public enum AttackView
 {
@@ -15,10 +16,26 @@ public class Animatronic
 {
     public string name;
     public Color sensorColor;
+
+    [Header("Tramo comun (camino compartido)")]
     public int[] route;
-    public AttackView attackView;
+    public AttackView attackView; // Usado si NO tiene bifurcacion (ej: Green)
     public float moveTime = 8f;
 
+    [Header("Bifurcacion (opcional)")]
+    [Tooltip("Si esta activo, al terminar el tramo comun el animatronico elige aleatoriamente entre el Camino A y el Camino B")]
+    public bool hasBranch = false;
+    [Tooltip("Continuacion de camaras despues del tramo comun, para el Camino A")]
+    public int[] routeContinuationA;
+    public AttackView attackViewA = AttackView.None;
+    [Tooltip("Continuacion de camaras despues del tramo comun, para el Camino B")]
+    public int[] routeContinuationB;
+    public AttackView attackViewB = AttackView.None;
+    [Range(0f, 1f)]
+    [Tooltip("Probabilidad de tomar el Camino A. El resto de probabilidad es para el Camino B")]
+    public float branchChanceA = 0.5f;
+
+    [HideInInspector] public bool branchResolved = false;
     [HideInInspector] public int routeIndex = 0;
     [HideInInspector] public int previousRouteIndex = 0;
     [HideInInspector] public float moveTimer = 0f;
@@ -39,21 +56,45 @@ public class AnimatronicManager : MonoBehaviour
     [SerializeField] private float timeToReact = 6f;
     [SerializeField] private string gameOverSceneName = "GameOver";
 
+    [Header("Screamer / Muerte")]
+    [SerializeField] private GameObject screamerPanel;
+    [SerializeField] private float screamerDuration = 1.5f;
+    [SerializeField] private AudioSource screamerAudioSource;
+    [SerializeField] private AudioClip screamerSound;
+    [SerializeField] private GameObject playerCanvasRoot;
+
+    [Header("Cooldown de Sonido")]
+    [SerializeField] private float soundCooldown = 15f;
+    [SerializeField] private Button soundButton;
+    private float soundCooldownTimer = 0f;
+    private bool soundOnCooldown = false;
+
     private int selectedCamera = 1;
     [SerializeField] private Color normalColor = new Color(1f, 1f, 1f, 1f);
     [SerializeField] private Color selectedColor = new Color(1f, 1f, 0f, 1f);
 
+    private bool isDying = false;
+
     private void Start()
     {
         RefreshTabletSensors();
+
+        if (screamerPanel != null)
+        {
+            screamerPanel.SetActive(false);
+        }
     }
 
     private void Update()
     {
+        if (isDying) return;
+
         UpdateAnimatronic(greenAnimatronic);
         UpdateAnimatronic(blueAnimatronic);
         RefreshTabletSensors();
+        UpdateSoundCooldown();
     }
+
     private void UpdateAnimatronic(Animatronic anim)
     {
         if (anim.attacking)
@@ -62,7 +103,7 @@ public class AnimatronicManager : MonoBehaviour
 
             if (anim.attackTimer >= timeToReact)
             {
-                SceneManager.LoadScene(gameOverSceneName);
+                TriggerDeath();
             }
 
             return;
@@ -75,23 +116,59 @@ public class AnimatronicManager : MonoBehaviour
             MoveForward(anim);
         }
     }
+
     private void MoveForward(Animatronic anim)
     {
-        anim.previousRouteIndex = anim.routeIndex;
-
-        if (anim.routeIndex < anim.route.Length - 1)
-        {
-            anim.routeIndex++;
-        }
-
+        // Si ya llego a su camara final (la ultima del recorrido) y se quedo un ciclo visible ahi,
+        // en este toque recien entra en estado de ataque (se vuelve invisible)
         if (anim.routeIndex == anim.route.Length - 1)
         {
             anim.attacking = true;
             anim.attackTimer = 0f;
+            return;
         }
+
+        anim.previousRouteIndex = anim.routeIndex;
+        anim.routeIndex++;
+
+        // Justo despues de moverse: si acaba de llegar al final del tramo comun
+        // y tiene bifurcacion sin resolver, elige el camino AQUI (antes de decidir si ataca)
+        TryResolveBranch(anim);
     }
+
+    //bifurcacion o osea otra ruta
+
+    private void TryResolveBranch(Animatronic anim)
+    {
+        if (!anim.hasBranch || anim.branchResolved) return;
+
+        // Solo se resuelve justo cuando acaba de llegar al final del tramo comun
+        if (anim.routeIndex != anim.route.Length - 1) return;
+
+        bool takeA = Random.value < anim.branchChanceA;
+
+        int[] continuation = takeA ? anim.routeContinuationA : anim.routeContinuationB;
+        AttackView chosenView = takeA ? anim.attackViewA : anim.attackViewB;
+
+        if (continuation != null && continuation.Length > 0)
+        {
+            int[] merged = new int[anim.route.Length + continuation.Length];
+            anim.route.CopyTo(merged, 0);
+            continuation.CopyTo(merged, anim.route.Length);
+
+            anim.route = merged;
+            anim.attackView = chosenView;
+        }
+
+        anim.branchResolved = true;
+
+        Debug.Log(anim.name + " eligio el Camino " + (takeA ? "A (" + anim.attackViewA + ")" : "B (" + anim.attackViewB + ")"));
+    }
+
     public void UseFlashlight(RoomView currentView)
     {
+        if (isDying) return;
+
         ScareIfVisible(greenAnimatronic, currentView);
         ScareIfVisible(blueAnimatronic, currentView);
     }
@@ -112,19 +189,74 @@ public class AnimatronicManager : MonoBehaviour
         anim.routeIndex = anim.previousRouteIndex;
         anim.moveTimer = 0f;
     }
+
+    // cooldown
+
     public void PlaySound()
     {
+        if (isDying) return;
+
+        if (soundOnCooldown)
+        {
+            Debug.Log("El sonido esta en cooldown. Espera " + soundCooldownTimer.ToString("F1") + "s");
+            return;
+        }
+
         Debug.Log("Sonido activado en Camara " + selectedCamera);
 
         PullToCamera(greenAnimatronic, selectedCamera);
         PullToCamera(blueAnimatronic, selectedCamera);
 
         RefreshTabletSensors();
+
+        StartSoundCooldown();
     }
+
+    private void StartSoundCooldown()
+    {
+        soundOnCooldown = true;
+        soundCooldownTimer = soundCooldown;
+
+        if (soundButton != null)
+        {
+            soundButton.interactable = false;
+        }
+    }
+
+    private void UpdateSoundCooldown()
+    {
+        if (!soundOnCooldown) return;
+
+        soundCooldownTimer -= Time.deltaTime;
+
+        if (soundCooldownTimer <= 0f)
+        {
+            soundOnCooldown = false;
+            soundCooldownTimer = 0f;
+
+            if (soundButton != null)
+            {
+                soundButton.interactable = true;
+            }
+        }
+    }
+
+    public float GetSoundCooldownRemaining()
+    {
+        return soundOnCooldown ? soundCooldownTimer : 0f;
+    }
+
+    // movimientoo y el aintisoplamient
 
     private void PullToCamera(Animatronic anim, int cameraNumber)
     {
         if (anim.attacking) return;
+
+        if (IsCameraOccupiedByOther(anim, cameraNumber))
+        {
+            Debug.Log(anim.name + " no se movio a Camara " + cameraNumber + " porque ya esta ocupada.");
+            return;
+        }
 
         for (int i = 0; i < anim.route.Length; i++)
         {
@@ -141,6 +273,20 @@ public class AnimatronicManager : MonoBehaviour
 
         Debug.Log(anim.name + " no puede ir a Camara " + cameraNumber);
     }
+
+    private bool IsCameraOccupiedByOther(Animatronic mover, int cameraNumber)
+    {
+        Animatronic other = (mover == greenAnimatronic) ? blueAnimatronic : greenAnimatronic;
+
+        if (other.attacking) return false;
+        if (other.route == null || other.route.Length == 0) return false;
+
+        int otherCamera = other.route[other.routeIndex];
+        return otherCamera == cameraNumber;
+    }
+
+    // senrosraeaa tabler
+
     private void RefreshTabletSensors()
     {
         for (int i = 0; i < cameraButtons.Length; i++)
@@ -175,13 +321,13 @@ public class AnimatronicManager : MonoBehaviour
             cameraButtons[buttonIndex].image.color = visibleColor;
         }
     }
-    
+
     private void SelectCamera(int cameraNumber)
     {
         selectedCamera = cameraNumber;
         Debug.Log("Camara seleccionada: " + selectedCamera);
     }
-    
+
     public void SelectCam1() { selectedCamera = 1; }
     public void SelectCam2() { selectedCamera = 2; }
     public void SelectCam3() { selectedCamera = 3; }
@@ -192,5 +338,35 @@ public class AnimatronicManager : MonoBehaviour
     public void SelectCam8() { selectedCamera = 8; }
     public void SelectCam9() { selectedCamera = 9; }
 
-    
+    // screarjer
+
+    private void TriggerDeath()
+    {
+        if (isDying) return;
+
+        isDying = true;
+        StartCoroutine(DeathSequence());
+    }
+
+    private IEnumerator DeathSequence()
+    {
+        if (playerCanvasRoot != null)
+        {
+            playerCanvasRoot.SetActive(false);
+        }
+
+        if (screamerPanel != null)
+        {
+            screamerPanel.SetActive(true);
+        }
+
+        if (screamerAudioSource != null && screamerSound != null)
+        {
+            screamerAudioSource.PlayOneShot(screamerSound);
+        }
+
+        yield return new WaitForSeconds(screamerDuration);
+
+        SceneManager.LoadScene(gameOverSceneName);
+    }
 }

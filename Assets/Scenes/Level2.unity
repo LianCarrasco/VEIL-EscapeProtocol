@@ -1060,13 +1060,8 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1003486362}
-  - {fileID: 1434748297}
   - {fileID: 1580214496}
-  - {fileID: 765973917}
-  - {fileID: 1558917228}
-  - {fileID: 1365568440}
-  - {fileID: 592242959}
-  - {fileID: 1149588734}
+  - {fileID: 1846418186}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1872,13 +1867,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 592242958}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 831459628}
-  m_Father: {fileID: 365298533}
+  m_Father: {fileID: 1580214496}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -2052,13 +2047,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 765973916}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 378668052}
-  m_Father: {fileID: 365298533}
+  m_Father: {fileID: 1580214496}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -3788,7 +3783,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1149588733}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -3806,12 +3801,12 @@ RectTransform:
   - {fileID: 112940935}
   - {fileID: 1177893517}
   - {fileID: 1005619022}
-  m_Father: {fileID: 365298533}
+  m_Father: {fileID: 1580214496}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: -164.64001}
-  m_SizeDelta: {x: -1002.4, y: -548.29}
+  m_SizeDelta: {x: 1457.6, y: 791.71}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1149588735
 MonoBehaviour:
@@ -4289,6 +4284,9 @@ MonoBehaviour:
   animatronicManager: {fileID: 1405782378}
   tabletPanel: {fileID: 1149588733}
   flashlightEffect: {fileID: 117398783}
+  btnLeft: {fileID: 1365568439}
+  btnRight: {fileID: 592242958}
+  btnBack: {fileID: 1558917227}
 --- !u!1 &1334692109
 GameObject:
   m_ObjectHideFlags: 0
@@ -4587,13 +4585,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1365568439}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1371273121}
-  m_Father: {fileID: 365298533}
+  m_Father: {fileID: 1580214496}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -4882,7 +4880,14 @@ MonoBehaviour:
     sensorColor: {r: 0.26493135, g: 0.8867924, b: 0.13887496, a: 0}
     route: 0800000007000000090000000400000005000000
     attackView: 4
-    moveTime: 4
+    moveTime: 11
+    hasBranch: 0
+    routeContinuationA: 
+    attackViewA: 0
+    routeContinuationB: 
+    attackViewB: 0
+    branchChanceA: 0.5
+    branchResolved: 0
     routeIndex: 0
     previousRouteIndex: 0
     moveTimer: 0
@@ -4891,9 +4896,16 @@ MonoBehaviour:
   blueAnimatronic:
     name: Blue
     sensorColor: {r: 0.13396227, g: 0.23556061, b: 1, a: 0}
-    route: 080000000700000006000000050000000300000002000000
+    route: 08000000070000000600000005000000
     attackView: 3
-    moveTime: 4
+    moveTime: 8
+    hasBranch: 1
+    routeContinuationA: 03000000
+    attackViewA: 3
+    routeContinuationB: 030000000200000001000000
+    attackViewB: 1
+    branchChanceA: 0.5
+    branchResolved: 0
     routeIndex: 0
     previousRouteIndex: 0
     moveTimer: 0
@@ -4911,6 +4923,13 @@ MonoBehaviour:
   - {fileID: 2063723755}
   timeToReact: 6
   gameOverSceneName: GameOver
+  screamerPanel: {fileID: 1846418185}
+  screamerDuration: 1.5
+  screamerAudioSource: {fileID: 0}
+  screamerSound: {fileID: 0}
+  playerCanvasRoot: {fileID: 1580214495}
+  soundCooldown: 15
+  soundButton: {fileID: 112940936}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   selectedColor: {r: 0.81886786, g: 0.81886786, b: 0.4001637, a: 1}
 --- !u!1 &1434748296
@@ -4939,14 +4958,14 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1434748296}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1365445385}
   - {fileID: 117398784}
-  m_Father: {fileID: 365298533}
+  m_Father: {fileID: 1580214496}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -5212,13 +5231,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1558917227}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 405516026}
-  m_Father: {fileID: 365298533}
+  m_Father: {fileID: 1580214496}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -5347,6 +5366,12 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1434748297}
+  - {fileID: 1149588734}
+  - {fileID: 592242959}
+  - {fileID: 1365568440}
+  - {fileID: 1558917228}
+  - {fileID: 765973917}
   - {fileID: 1485053249}
   m_Father: {fileID: 365298533}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5773,6 +5798,142 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1834384877}
   m_CullTransparentMesh: 1
+--- !u!1 &1846418185
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1846418186}
+  - component: {fileID: 1846418188}
+  - component: {fileID: 1846418187}
+  - component: {fileID: 1846418189}
+  m_Layer: 5
+  m_Name: SCREAMER
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &1846418186
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1846418185}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 365298533}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1846418187
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1846418185}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 1
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1846418188
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1846418185}
+  m_CullTransparentMesh: 1
+--- !u!114 &1846418189
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1846418185}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab8acb4f777e833409f3de5bf038543c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimatronicManager
+  greenAnimatronic:
+    name: 
+    sensorColor: {r: 0, g: 0, b: 0, a: 0}
+    route: 
+    attackView: 0
+    moveTime: 8
+    hasBranch: 0
+    routeContinuationA: 
+    attackViewA: 0
+    routeContinuationB: 
+    attackViewB: 0
+    branchChanceA: 0.5
+    branchResolved: 0
+    routeIndex: 0
+    previousRouteIndex: 0
+    moveTimer: 0
+    attackTimer: 0
+    attacking: 0
+  blueAnimatronic:
+    name: 
+    sensorColor: {r: 0, g: 0, b: 0, a: 0}
+    route: 
+    attackView: 0
+    moveTime: 8
+    hasBranch: 0
+    routeContinuationA: 
+    attackViewA: 0
+    routeContinuationB: 
+    attackViewB: 0
+    branchChanceA: 0.5
+    branchResolved: 0
+    routeIndex: 0
+    previousRouteIndex: 0
+    moveTimer: 0
+    attackTimer: 0
+    attacking: 0
+  cameraButtons: []
+  timeToReact: 6
+  gameOverSceneName: GameOver
+  screamerPanel: {fileID: 0}
+  screamerDuration: 1.5
+  screamerAudioSource: {fileID: 0}
+  screamerSound: {fileID: 0}
+  playerCanvasRoot: {fileID: 0}
+  soundCooldown: 15
+  soundButton: {fileID: 0}
+  normalColor: {r: 1, g: 1, b: 1, a: 1}
+  selectedColor: {r: 1, g: 1, b: 0, a: 1}
 --- !u!1 &2019136003
 GameObject:
   m_ObjectHideFlags: 0

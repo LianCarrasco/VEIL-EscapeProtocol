@@ -22,6 +22,11 @@ public class ViewController : MonoBehaviour
     [Header("Linterna")]
     [SerializeField] private GameObject flashlightEffect;
 
+    [Header("Botones de Navegacion")]
+    [SerializeField] private GameObject btnLeft;
+    [SerializeField] private GameObject btnRight;
+    [SerializeField] private GameObject btnBack;
+
     private bool flashlightOn = false;
     private RoomView currentView = RoomView.Central;
     private bool tabletOpen = false;
@@ -107,7 +112,7 @@ public class ViewController : MonoBehaviour
         {
             tabletPanel.SetActive(false);
         }
-            
+
     }
 
     public void ToggleTablet()
@@ -118,9 +123,9 @@ public class ViewController : MonoBehaviour
             CloseTablet();
             return;
         }
-        
+
         OpenTablet();
-        
+
     }
 
     private void UpdateView(RoomView newView)
@@ -134,6 +139,40 @@ public class ViewController : MonoBehaviour
         leftView.SetActive(currentView == RoomView.Left);
         rightView.SetActive(currentView == RoomView.Right);
         backView.SetActive(currentView == RoomView.Back);
+
+        UpdateNavigationButtons(currentView);
+    }
+
+    private void UpdateNavigationButtons(RoomView view)
+    {
+        switch (view)
+        {
+            case RoomView.Central:
+                SetNavButtons(left: true, right: true, back: true);
+                break;
+
+            case RoomView.Left:
+                // Desde la izquierda solo se puede volver al centro (con el boton derecho)
+                SetNavButtons(left: false, right: true, back: false);
+                break;
+
+            case RoomView.Right:
+                // Desde la derecha solo se puede volver al centro (con el boton izquierdo)
+                SetNavButtons(left: true, right: false, back: false);
+                break;
+
+            case RoomView.Back:
+                // Desde atras solo se puede volver al centro (presionando atras de nuevo)
+                SetNavButtons(left: false, right: false, back: true);
+                break;
+        }
+    }
+
+    private void SetNavButtons(bool left, bool right, bool back)
+    {
+        if (btnLeft != null) btnLeft.SetActive(left);
+        if (btnRight != null) btnRight.SetActive(right);
+        if (btnBack != null) btnBack.SetActive(back);
     }
 
     public void ToggleFlashlight()
