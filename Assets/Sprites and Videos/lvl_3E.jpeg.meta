@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 1750a8f46139fc64da678a26f2f7d9a6
+guid: cfc20d97a6297704daac40d82eba3eac
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1842155051995700302
-    second: tablet_abierta_0
+      213: -3282346952273187954
+    second: lvl_3E_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: tablet_abierta_0
+      name: lvl_3E_0
       rect:
         serializedVersion: 2
-        x: 137
-        y: 43
-        width: 401
-        height: 288
+        x: 0
+        y: 0
+        width: 1280
+        height: 720
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 2b3ea988db95f66e0800000000000000
-      internalID: -1842155051995700302
+      spriteID: e8bab2866d2c272d0800000000000000
+      internalID: -3282346952273187954
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      tablet_abierta_0: -1842155051995700302
+      lvl_3E_0: -3282346952273187954
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
