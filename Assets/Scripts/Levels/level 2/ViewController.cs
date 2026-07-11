@@ -26,6 +26,9 @@ public class ViewController : MonoBehaviour
     [SerializeField] private GameObject btnLeft;
     [SerializeField] private GameObject btnRight;
     [SerializeField] private GameObject btnBack;
+    //s
+    [SerializeField] private GameObject btnTablet;
+    [SerializeField] private GameObject btnLinterna;
 
     private bool flashlightOn = false;
     private RoomView currentView = RoomView.Central;
@@ -148,31 +151,34 @@ public class ViewController : MonoBehaviour
         switch (view)
         {
             case RoomView.Central:
-                SetNavButtons(left: true, right: true, back: true);
+                SetNavButtons(left: true, right: true, back: true, tablet: true, linterna: false);//s
                 break;
 
             case RoomView.Left:
                 // Desde la izquierda solo se puede volver al centro (con el boton derecho)
-                SetNavButtons(left: false, right: true, back: false);
+                SetNavButtons(left: false, right: true, back: false, tablet: false, linterna: true);//s
                 break;
 
             case RoomView.Right:
                 // Desde la derecha solo se puede volver al centro (con el boton izquierdo)
-                SetNavButtons(left: true, right: false, back: false);
+                SetNavButtons(left: true, right: false, back: false, tablet: false, linterna: true); //s
                 break;
 
             case RoomView.Back:
                 // Desde atras solo se puede volver al centro (presionando atras de nuevo)
-                SetNavButtons(left: false, right: false, back: true);
+                SetNavButtons(left: false, right: false, back: true, tablet: false, linterna: true); //s
                 break;
         }
     }
 
-    private void SetNavButtons(bool left, bool right, bool back)
+    private void SetNavButtons(bool left, bool right, bool back, bool tablet, bool linterna)
     {
         if (btnLeft != null) btnLeft.SetActive(left);
         if (btnRight != null) btnRight.SetActive(right);
         if (btnBack != null) btnBack.SetActive(back);
+        //s
+        if (btnTablet != null) btnTablet.SetActive(tablet);
+        if (btnLinterna != null) btnLinterna.SetActive(linterna);
     }
 
     public void ToggleFlashlight()
@@ -208,6 +214,7 @@ public class ViewController : MonoBehaviour
         return currentView == RoomView.Left ||
                currentView == RoomView.Right ||
                currentView == RoomView.Back;
+
     }
     //s
     private bool CanOpenTablet()

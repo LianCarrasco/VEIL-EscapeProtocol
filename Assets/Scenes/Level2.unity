@@ -4211,6 +4211,8 @@ MonoBehaviour:
   btnLeft: {fileID: 1365568439}
   btnRight: {fileID: 592242958}
   btnBack: {fileID: 1558917227}
+  btnTablet: {fileID: 765973916}
+  btnLinterna: {fileID: 1434748296}
 --- !u!1 &1334692109
 GameObject:
   m_ObjectHideFlags: 0
