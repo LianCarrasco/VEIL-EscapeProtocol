@@ -29,6 +29,7 @@ public class ViewController : MonoBehaviour
     //s
     [SerializeField] private GameObject btnTablet;
     [SerializeField] private GameObject btnLinterna;
+    [SerializeField] private GameObject btnAbrir;
 
     private bool flashlightOn = false;
     private RoomView currentView = RoomView.Central;
@@ -167,7 +168,7 @@ public class ViewController : MonoBehaviour
             case RoomView.Back:
                 // Desde atras solo se puede volver al centro (presionando atras de nuevo)
                 SetNavButtons(left: false, right: false, back: true, tablet: false, linterna: true); //s
-                break;
+                break;       
         }
     }
 
@@ -179,6 +180,7 @@ public class ViewController : MonoBehaviour
         //s
         if (btnTablet != null) btnTablet.SetActive(tablet);
         if (btnLinterna != null) btnLinterna.SetActive(linterna);
+        
     }
 
     public void ToggleFlashlight()

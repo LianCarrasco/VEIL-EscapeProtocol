@@ -35,6 +35,16 @@ public class Animatronic
     [Tooltip("Probabilidad de tomar el Camino A. El resto de probabilidad es para el Camino B")]
     public float branchChanceA = 0.5f;
 
+    [Header("Ataque")]
+    [Tooltip("Segundos que tiene el jugador para reaccionar una vez que este animatronico empieza a atacar, antes de morir")]
+    public float timeToReact = 6f;
+
+    [Header("Screamer propio")]
+    [Tooltip("Panel/Imagen que se muestra si ESTE animatronico es el que te mata")]
+    public GameObject screamerPanel;
+    [Tooltip("Sonido que se reproduce si ESTE animatronico es el que te mata")]
+    public AudioClip screamerSound;
+
     [HideInInspector] public bool branchResolved = false;
     [HideInInspector] public int routeIndex = 0;
     [HideInInspector] public int previousRouteIndex = 0;
@@ -53,14 +63,11 @@ public class AnimatronicManager : MonoBehaviour
     [SerializeField] private Button[] cameraButtons;
 
     [Header("Reglas")]
-    [SerializeField] private float timeToReact = 6f;
     [SerializeField] private string gameOverSceneName = "GameOver";
 
-    [Header("Screamer / Muerte")]
-    [SerializeField] private GameObject screamerPanel;
+    [Header("Screamer / Muerte (compartido)")]
     [SerializeField] private float screamerDuration = 1.5f;
     [SerializeField] private AudioSource screamerAudioSource;
-    [SerializeField] private AudioClip screamerSound;
     [SerializeField] private GameObject playerCanvasRoot;
 
     [Header("Cooldown de Sonido")]
@@ -79,9 +86,14 @@ public class AnimatronicManager : MonoBehaviour
     {
         RefreshTabletSensors();
 
-        if (screamerPanel != null)
+        if (greenAnimatronic.screamerPanel != null)
         {
-            screamerPanel.SetActive(false);
+            greenAnimatronic.screamerPanel.SetActive(false);
+        }
+
+        if (blueAnimatronic.screamerPanel != null)
+        {
+            blueAnimatronic.screamerPanel.SetActive(false);
         }
     }
 
@@ -101,9 +113,9 @@ public class AnimatronicManager : MonoBehaviour
         {
             anim.attackTimer += Time.deltaTime;
 
-            if (anim.attackTimer >= timeToReact)
+            if (anim.attackTimer >= anim.timeToReact)
             {
-                TriggerDeath();
+                TriggerDeath(anim);
             }
 
             return;
@@ -136,7 +148,7 @@ public class AnimatronicManager : MonoBehaviour
         TryResolveBranch(anim);
     }
 
-    //bifurcacion o osea otra ruta
+    //BIFURCACION DE RUTA
 
     private void TryResolveBranch(Animatronic anim)
     {
@@ -190,7 +202,7 @@ public class AnimatronicManager : MonoBehaviour
         anim.moveTimer = 0f;
     }
 
-    // cooldown
+    //SONIDO COOLDOWN
 
     public void PlaySound()
     {
@@ -246,7 +258,7 @@ public class AnimatronicManager : MonoBehaviour
         return soundOnCooldown ? soundCooldownTimer : 0f;
     }
 
-    // movimientoo y el aintisoplamient
+    //MOVIMIENTO POR SONIDO (con anti-solapamiento)
 
     private void PullToCamera(Animatronic anim, int cameraNumber)
     {
@@ -285,7 +297,7 @@ public class AnimatronicManager : MonoBehaviour
         return otherCamera == cameraNumber;
     }
 
-    // senrosraeaa tabler
+    // TABLET
 
     private void RefreshTabletSensors()
     {
@@ -338,31 +350,31 @@ public class AnimatronicManager : MonoBehaviour
     public void SelectCam8() { selectedCamera = 8; }
     public void SelectCam9() { selectedCamera = 9; }
 
-    // screarjer
+    // SCREAMER MUERTE
 
-    private void TriggerDeath()
+    private void TriggerDeath(Animatronic killer)
     {
         if (isDying) return;
 
         isDying = true;
-        StartCoroutine(DeathSequence());
+        StartCoroutine(DeathSequence(killer));
     }
 
-    private IEnumerator DeathSequence()
+    private IEnumerator DeathSequence(Animatronic killer)
     {
         if (playerCanvasRoot != null)
         {
             playerCanvasRoot.SetActive(false);
         }
 
-        if (screamerPanel != null)
+        if (killer.screamerPanel != null)
         {
-            screamerPanel.SetActive(true);
+            killer.screamerPanel.SetActive(true);
         }
 
-        if (screamerAudioSource != null && screamerSound != null)
+        if (screamerAudioSource != null && killer.screamerSound != null)
         {
-            screamerAudioSource.PlayOneShot(screamerSound);
+            screamerAudioSource.PlayOneShot(killer.screamerSound);
         }
 
         yield return new WaitForSeconds(screamerDuration);
