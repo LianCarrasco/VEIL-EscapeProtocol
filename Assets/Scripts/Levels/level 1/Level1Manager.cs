@@ -10,6 +10,9 @@ public class Level1Manager : MonoBehaviour
     [SerializeField] private float levelDuration = 180f;
     [SerializeField] private TMP_Text timeText;
 
+    [Header("Tutorial")]
+    [SerializeField] private GameObject tutorialPanel;
+
     [Header("Tablet")]
     [SerializeField] private GameObject tabletPanel;
     [SerializeField] private GameObject noPowerMessagePanel;
@@ -30,11 +33,13 @@ public class Level1Manager : MonoBehaviour
     [SerializeField] private float maxPowerFailTime = 35f;
     [SerializeField] private float generatorRepairTime = 3f;
     [SerializeField] private Image generatorProgressImage;
+    [SerializeField] private GameObject repairGeneratorButton;
+    [SerializeField] private GameObject lightOffImage;
 
     private bool isRepairingGenerator;
 
     [Header("Estado")]
-    [SerializeField] private bool levelStarted = true;
+    [SerializeField] private bool levelStarted = false;
 
     private float currentTime;
     private float currentTemperature;
@@ -56,9 +61,26 @@ public class Level1Manager : MonoBehaviour
         ScheduleNextHeatEvent();
         ScheduleNextPowerFail();
 
+        levelStarted = false;
+
+        if (tutorialPanel != null)
+        {
+            tutorialPanel.SetActive(true);
+        }
+
+        if (lightOffImage != null)
+        {
+            lightOffImage.SetActive(false);
+        }
+
         if (tabletPanel != null)
         {
             tabletPanel.SetActive(false);
+        }
+
+        if (repairGeneratorButton != null)
+        {
+            repairGeneratorButton.SetActive(false);
         }
 
         if (noPowerMessagePanel != null)
@@ -91,6 +113,18 @@ public class Level1Manager : MonoBehaviour
         UpdateLevelTimer();
         UpdateTemperatureSystem();
         UpdateGeneratorSystem();
+    }
+
+    public void StartLevelFromTutorial()
+    {
+        levelStarted = true;
+
+        if (tutorialPanel != null)
+        {
+            tutorialPanel.SetActive(false);
+        }
+
+        Debug.Log("Nivel 1 iniciado después del tutorial.");
     }
 
     private void UpdateLevelTimer()
@@ -275,6 +309,16 @@ public class Level1Manager : MonoBehaviour
             }
         }
 
+        if (repairGeneratorButton != null)
+        {
+            repairGeneratorButton.SetActive(true);
+        }
+
+        if (lightOffImage != null)
+        {
+            lightOffImage.SetActive(true);
+        }
+
         Debug.Log("El generador se apagó.");
     }
 
@@ -329,10 +373,20 @@ public class Level1Manager : MonoBehaviour
         isPowerOn = true;
         isRepairingGenerator = false;
 
+        if (repairGeneratorButton != null)
+        {
+            repairGeneratorButton.SetActive(false);
+        }
+
         if (generatorProgressImage != null)
         {
             generatorProgressImage.fillAmount = 0f;
             generatorProgressImage.gameObject.SetActive(false);
+        }
+
+        if (lightOffImage != null)
+        {
+            lightOffImage.SetActive(false);
         }
 
         if (noPowerMessagePanel != null)
