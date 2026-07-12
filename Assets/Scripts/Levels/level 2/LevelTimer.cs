@@ -11,8 +11,6 @@ public class LevelTimer : MonoBehaviour
     [Header("Scene")]
     [SerializeField] private string winSceneName = "Win";
 
-    [SerializeField] private int numeroNivel = 1;
-
     private float elapsedTime = 0f;
     private bool levelFinished = false;
 
@@ -32,18 +30,20 @@ public class LevelTimer : MonoBehaviour
 
     private void UpdateClockText()
     {
-        int totalSeconds = Mathf.FloorToInt(elapsedTime);
-        int minutes = totalSeconds / 60;
-        int seconds = totalSeconds % 60;
+        float progreso = elapsedTime / timeToWin;
 
-        clockText.text = minutes.ToString("00") + ":" + seconds.ToString("00");
+        // 3 minutos reales = de 02:00 a 04:00
+        int minutosTotales = Mathf.FloorToInt(120f + (progreso * 120f));
+
+        int horas = minutosTotales / 60;
+        int minutos = minutosTotales % 60;
+
+        clockText.text = horas.ToString("00") + ":" + minutos.ToString("00");
     }
 
     private void WinLevel()
     {
         levelFinished = true;
-
-        PlayerPrefs.SetInt("NivelActual", numeroNivel);
 
         SceneManager.LoadScene(winSceneName);
     }

@@ -24,26 +24,42 @@ public class Animatronic
 
     [Header("Bifurcacion (opcional)")]
     [Tooltip("Si esta activo, al terminar el tramo comun el animatronico elige aleatoriamente entre el Camino A y el Camino B")]
+
     public bool hasBranch = false;
     [Tooltip("Continuacion de camaras despues del tramo comun, para el Camino A")]
+
     public int[] routeContinuationA;
+
     public AttackView attackViewA = AttackView.None;
     [Tooltip("Continuacion de camaras despues del tramo comun, para el Camino B")]
+
     public int[] routeContinuationB;
+
     public AttackView attackViewB = AttackView.None;
     [Range(0f, 1f)]
     [Tooltip("Probabilidad de tomar el Camino A. El resto de probabilidad es para el Camino B")]
+
     public float branchChanceA = 0.5f;
 
     [Header("Ataque")]
     [Tooltip("Segundos que tiene el jugador para reaccionar una vez que este animatronico empieza a atacar, antes de morir")]
+
     public float timeToReact = 6f;
 
     [Header("Screamer propio")]
     [Tooltip("Panel/Imagen que se muestra si ESTE animatronico es el que te mata")]
+
     public GameObject screamerPanel;
     [Tooltip("Sonido que se reproduce si ESTE animatronico es el que te mata")]
+
     public AudioClip screamerSound;
+    [Header("Visual de 'asomado' en la puerta")]
+    [Tooltip("Sprite/GameObject que se activa cuando este animatronico esta atacando desde la vista IZQUIERDA")]
+    public GameObject peekVisualLeft;
+    [Tooltip("Sprite/GameObject que se activa cuando este animatronico esta atacando desde la vista DERECHA")]
+    public GameObject peekVisualRight;
+    [Tooltip("Sprite/GameObject que se activa cuando este animatronico esta atacando desde la vista TRASERA")]
+    public GameObject peekVisualBack;
 
     [HideInInspector] public bool branchResolved = false;
     [HideInInspector] public int routeIndex = 0;
@@ -55,6 +71,9 @@ public class Animatronic
 
 public class AnimatronicManager : MonoBehaviour
 {
+    [Header("Vista actual del jugador")]
+    [SerializeField] private ViewController viewController;
+
     [Header("Animatronicos")]
     [SerializeField] private Animatronic greenAnimatronic;
     [SerializeField] private Animatronic blueAnimatronic;
@@ -64,6 +83,13 @@ public class AnimatronicManager : MonoBehaviour
 
     [Header("Reglas")]
     [SerializeField] private string gameOverSceneName = "GameOver";
+
+    [Header("Victoria")]
+    [SerializeField] private float surviveTime = 180f;
+    [SerializeField] private string winSceneName = "Win";
+
+    private float timer;
+    private bool gameEnded = false;
 
     [Header("Screamer / Muerte (compartido)")]
     [SerializeField] private float screamerDuration = 1.5f;
@@ -84,6 +110,8 @@ public class AnimatronicManager : MonoBehaviour
 
     private void Start()
     {
+        timer = surviveTime;
+
         RefreshTabletSensors();
 
         if (greenAnimatronic.screamerPanel != null)
@@ -99,12 +127,66 @@ public class AnimatronicManager : MonoBehaviour
 
     private void Update()
     {
+        if (gameEnded)
+            return;
+
+        timer -= Time.deltaTime;
+
+        if (timer <= 0f)
+        {
+            WinGame();
+            return;
+        }
+
         if (isDying) return;
 
         UpdateAnimatronic(greenAnimatronic);
         UpdateAnimatronic(blueAnimatronic);
         RefreshTabletSensors();
         UpdateSoundCooldown();
+        if (viewController != null)
+        {
+            RoomView currentView = viewController.CurrentView;
+            UpdatePeekVisuals(greenAnimatronic, currentView);
+            UpdatePeekVisuals(blueAnimatronic, currentView);
+        }
+    }
+
+    private void UpdatePeekVisuals(Animatronic anim, RoomView currentView)
+    {
+        SetActiveSafe(anim.peekVisualLeft, false);
+        SetActiveSafe(anim.peekVisualRight, false);
+        SetActiveSafe(anim.peekVisualBack, false);
+
+        if (!anim.attacking) return;
+
+        bool viewMatches =
+        (anim.attackView == AttackView.Left && currentView == RoomView.Left) ||
+        (anim.attackView == AttackView.Right && currentView == RoomView.Right) ||
+        (anim.attackView == AttackView.Back && currentView == RoomView.Back);
+
+        if (!viewMatches) return;
+
+        switch (anim.attackView)
+        {
+            case AttackView.Left:
+                SetActiveSafe(anim.peekVisualLeft, true);
+                break;
+            case AttackView.Right:
+                SetActiveSafe(anim.peekVisualRight, true);
+                break;
+            case AttackView.Back:
+                SetActiveSafe(anim.peekVisualBack, true);
+                break;
+        }
+    }
+
+    private void SetActiveSafe(GameObject obj, bool active)
+    {
+        if (obj != null)
+        {
+            obj.SetActive(active);
+        }
     }
 
     private void UpdateAnimatronic(Animatronic anim)
@@ -357,11 +439,20 @@ public class AnimatronicManager : MonoBehaviour
         if (isDying) return;
 
         isDying = true;
+        gameEnded = true;
+
         StartCoroutine(DeathSequence(killer));
     }
 
     private IEnumerator DeathSequence(Animatronic killer)
     {
+        SetActiveSafe(greenAnimatronic.peekVisualLeft, false);
+        SetActiveSafe(greenAnimatronic.peekVisualRight, false);
+        SetActiveSafe(greenAnimatronic.peekVisualBack, false);
+        SetActiveSafe(blueAnimatronic.peekVisualLeft, false);
+        SetActiveSafe(blueAnimatronic.peekVisualRight, false);
+        SetActiveSafe(blueAnimatronic.peekVisualBack, false);
+
         if (playerCanvasRoot != null)
         {
             playerCanvasRoot.SetActive(false);
@@ -378,7 +469,17 @@ public class AnimatronicManager : MonoBehaviour
         }
 
         yield return new WaitForSeconds(screamerDuration);
+
         GameManager.GuardarNivelActual();
         SceneManager.LoadScene(gameOverSceneName);
+    }
+
+    private void WinGame()
+    {
+        gameEnded = true;
+
+        GameManager.GuardarNivelActual();
+
+        SceneManager.LoadScene(winSceneName);
     }
 }

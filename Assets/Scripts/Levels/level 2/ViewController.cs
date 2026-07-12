@@ -34,6 +34,8 @@ public class ViewController : MonoBehaviour
     private bool flashlightOn = false;
     private RoomView currentView = RoomView.Central;
     private bool tabletOpen = false;
+    public RoomView CurrentView => currentView;
+
     private void Start()
     {
         UpdateView(RoomView.Central);
@@ -135,7 +137,7 @@ public class ViewController : MonoBehaviour
     private void UpdateView(RoomView newView)
     {
         TurnOffFlashlight();
-        //s
+        
         CloseTablet();
         currentView = newView;
 
@@ -177,7 +179,7 @@ public class ViewController : MonoBehaviour
         if (btnLeft != null) btnLeft.SetActive(left);
         if (btnRight != null) btnRight.SetActive(right);
         if (btnBack != null) btnBack.SetActive(back);
-        //s
+        
         if (btnTablet != null) btnTablet.SetActive(tablet);
         if (btnLinterna != null) btnLinterna.SetActive(linterna);
         
@@ -218,15 +220,9 @@ public class ViewController : MonoBehaviour
                currentView == RoomView.Back;
 
     }
-    //s
+   
     private bool CanOpenTablet()
     {
         return currentView == RoomView.Central;
     }
-    /*
-    private void ScareAnimatronics()
-    {
-        Debug.Log("Linterna activada: aqui se alejaria al animatronico.");
-    }
-    */
 }

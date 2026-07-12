@@ -18,11 +18,21 @@ public class GameManager : MonoBehaviour
     public static void GuardarNivelActual()
     {
         ultimoNivel = SceneManager.GetActiveScene().name;
+        Debug.Log("Nivel guardado: " + ultimoNivel);
     }
 
     public void Reintentar()
     {
-        SceneManager.LoadScene(ultimoNivel);
+        Debug.Log("Reintentando nivel: " + ultimoNivel);
+
+        if (!string.IsNullOrEmpty(ultimoNivel))
+        {
+            SceneManager.LoadScene(ultimoNivel);
+        }
+        else
+        {
+            Debug.LogError("No hay nivel guardado.");
+        }
     }
 
     public void MenuPrincipal()

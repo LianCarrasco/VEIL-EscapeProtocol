@@ -453,10 +453,12 @@ public class Level1Manager : MonoBehaviour
             return;
         }
 
-        int minutes = Mathf.FloorToInt(currentTime / 60f);
-        int seconds = Mathf.FloorToInt(currentTime % 60f);
+        float gameMinutes = Mathf.Lerp(0f, 120f, currentTime / levelDuration);
 
-        timeText.text = minutes.ToString("00") + ":" + seconds.ToString("00");
+        int hours = Mathf.FloorToInt(gameMinutes / 60f);
+        int minutes = Mathf.FloorToInt(gameMinutes % 60f);
+
+        timeText.text = hours.ToString("00") + ":" + minutes.ToString("00");
     }
 
     private void UpdateTemperatureUI()
