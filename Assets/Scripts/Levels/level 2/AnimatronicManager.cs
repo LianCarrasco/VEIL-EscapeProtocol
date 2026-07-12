@@ -378,7 +378,7 @@ public class AnimatronicManager : MonoBehaviour
         }
 
         yield return new WaitForSeconds(screamerDuration);
-
+        GameManager.GuardarNivelActual();
         SceneManager.LoadScene(gameOverSceneName);
     }
 }

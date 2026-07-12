@@ -200,6 +200,7 @@ public class Level3Manager : MonoBehaviour
         yield return new WaitForSeconds(jumpscareDuration);
 
         Debug.Log("Game Over: " + reason);
+        GameManager.GuardarNivelActual();
         SceneManager.LoadScene("GameOver");
     }
 
@@ -877,6 +878,9 @@ public class Level3Manager : MonoBehaviour
         isLevelFinished = true;
 
         Debug.Log("Ganaste el juego.");
+
+        PlayerPrefs.SetInt("NivelActual", 3);
+
         SceneManager.LoadScene("Win");
     }
 

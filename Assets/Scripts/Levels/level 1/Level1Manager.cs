@@ -427,7 +427,9 @@ public class Level1Manager : MonoBehaviour
         isLevelFinished = true;
 
         Debug.Log("Nivel 1 completado.");
-        SceneManager.LoadScene("Level2");
+
+        PlayerPrefs.SetInt("NivelActual", 1);
+        SceneManager.LoadScene("Win");
     }
 
     private void LoseLevel(string reason)
@@ -440,6 +442,7 @@ public class Level1Manager : MonoBehaviour
         isLevelFinished = true;
 
         Debug.Log("Game Over: " + reason);
+        GameManager.GuardarNivelActual();
         SceneManager.LoadScene("GameOver");
     }
 

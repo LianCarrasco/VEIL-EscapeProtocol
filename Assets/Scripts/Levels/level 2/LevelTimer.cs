@@ -11,6 +11,8 @@ public class LevelTimer : MonoBehaviour
     [Header("Scene")]
     [SerializeField] private string winSceneName = "Win";
 
+    [SerializeField] private int numeroNivel = 1;
+
     private float elapsedTime = 0f;
     private bool levelFinished = false;
 
@@ -40,6 +42,9 @@ public class LevelTimer : MonoBehaviour
     private void WinLevel()
     {
         levelFinished = true;
+
+        PlayerPrefs.SetInt("NivelActual", numeroNivel);
+
         SceneManager.LoadScene(winSceneName);
     }
 }
