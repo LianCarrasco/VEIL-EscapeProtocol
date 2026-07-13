@@ -1639,7 +1639,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &397638667
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1939,7 +1939,6 @@ MonoBehaviour:
   sonidoPuerta: {fileID: 0}
   linternaEncender: {fileID: 0}
   linternaAnimatronico: {fileID: 0}
-  interferenciaCamara: {fileID: 0}
 --- !u!82 &427255561
 AudioSource:
   m_ObjectHideFlags: 0
@@ -5718,7 +5717,7 @@ MonoBehaviour:
     name: Verde
     sensorColor: {r: 0.26493135, g: 0.8867924, b: 0.13887496, a: 0}
     route: 0800000007000000090000000400000005000000
-    attackView: 4
+    attackView: 2
     moveTime: 13
     hasBranch: 0
     routeContinuationA: 
@@ -6531,7 +6530,7 @@ MonoBehaviour:
     attackViewB: 0
     branchChanceA: 0.5
     timeToReact: 6
-    screamerPanel: {fileID: 0}
+    screamerPanel: {fileID: 1846418185}
     screamerSound: {fileID: 0}
     peekVisualLeft: {fileID: 0}
     peekVisualRight: {fileID: 0}
@@ -6555,7 +6554,7 @@ MonoBehaviour:
     attackViewB: 0
     branchChanceA: 0.5
     timeToReact: 6
-    screamerPanel: {fileID: 0}
+    screamerPanel: {fileID: 1766140544}
     screamerSound: {fileID: 0}
     peekVisualLeft: {fileID: 0}
     peekVisualRight: {fileID: 0}
@@ -6928,15 +6927,15 @@ MonoBehaviour:
     sensorColor: {r: 0, g: 0, b: 0, a: 0}
     route: 
     attackView: 0
-    moveTime: 8
+    moveTime: 13
     hasBranch: 0
     routeContinuationA: 
     attackViewA: 0
     routeContinuationB: 
     attackViewB: 0
     branchChanceA: 0.5
-    timeToReact: 6
-    screamerPanel: {fileID: 0}
+    timeToReact: 8
+    screamerPanel: {fileID: 1846418185}
     screamerSound: {fileID: 0}
     peekVisualLeft: {fileID: 0}
     peekVisualRight: {fileID: 0}

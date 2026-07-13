@@ -24,7 +24,6 @@ public class AudioManager : MonoBehaviour
     public AudioClip sonidoPuerta;
     public AudioClip linternaEncender;
     public AudioClip linternaAnimatronico;
-    public AudioClip interferenciaCamara;
 
     void Awake()
     {
@@ -99,10 +98,6 @@ public class AudioManager : MonoBehaviour
         audioSource.PlayOneShot(linternaAnimatronico);
     }
 
-    public void Interferencia()
-    {
-        audioSource.PlayOneShot(interferenciaCamara);
-    }
 
     public void Screamer()
     {

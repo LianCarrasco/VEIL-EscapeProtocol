@@ -3757,7 +3757,7 @@ MonoBehaviour:
     isGeneratorRoom: 1
     doorSide: 2
   minMoveTime: 10
-  maxMoveTime: 30
+  maxMoveTime: 20
   jumpscareVisual: {fileID: 1035895120}
   cameraVisual: {fileID: 2122046888}
 --- !u!1 &818420023
@@ -4920,7 +4920,7 @@ MonoBehaviour:
     isGeneratorRoom: 0
     doorSide: 1
   minMoveTime: 10
-  maxMoveTime: 30
+  maxMoveTime: 20
   jumpscareVisual: {fileID: 287300822}
   cameraVisual: {fileID: 1086764545}
 --- !u!1 &1200022685
@@ -8183,8 +8183,8 @@ MonoBehaviour:
   timeText: {fileID: 818420025}
   batterySlider: {fileID: 129423997}
   maxBattery: 100
-  tabletBatteryDrainPerSecond: 0.75
-  closedDoorDrainPerSecond: 1.5
+  tabletBatteryDrainPerSecond: 0.5
+  closedDoorDrainPerSecond: 1
   tabletPanel: {fileID: 320467103}
   mapPanel: {fileID: 1760855505}
   cameraPanel: {fileID: 697999562}
@@ -8405,7 +8405,7 @@ MonoBehaviour:
     isGeneratorRoom: 0
     doorSide: 0
   minMoveTime: 10
-  maxMoveTime: 30
+  maxMoveTime: 20
   jumpscareVisual: {fileID: 197448215}
   cameraVisual: {fileID: 19171747}
 --- !u!1 &1868749322
@@ -8613,7 +8613,6 @@ MonoBehaviour:
   sonidoPuerta: {fileID: 8300000, guid: 1b0c5b1028989284b82a1d83e1e7dad9, type: 3}
   linternaEncender: {fileID: 8300000, guid: b772991ad29bb4543ac5f91d55a138aa, type: 3}
   linternaAnimatronico: {fileID: 8300000, guid: 8cef4587e78a3c24795b5eb39e972823, type: 3}
-  interferenciaCamara: {fileID: 8300000, guid: 3b1e83f9592bd2246b996aba9903f096, type: 3}
 --- !u!82 &1895451236
 AudioSource:
   m_ObjectHideFlags: 0

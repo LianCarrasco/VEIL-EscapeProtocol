@@ -490,7 +490,6 @@ public class AnimatronicManager : MonoBehaviour
         SetActiveSafe(blueAnimatronic.peekVisualRight, false);
         SetActiveSafe(blueAnimatronic.peekVisualBack, false);
 
-
         if (killer.screamerPanel != null)
         {
             killer.screamerPanel.SetActive(true);

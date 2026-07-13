@@ -4658,7 +4658,6 @@ MonoBehaviour:
   sonidoPuerta: {fileID: 0}
   linternaEncender: {fileID: 0}
   linternaAnimatronico: {fileID: 0}
-  interferenciaCamara: {fileID: 0}
 --- !u!1 &1795642884
 GameObject:
   m_ObjectHideFlags: 0
@@ -5694,7 +5693,7 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 2090422609}
-  - {fileID: 35758068}
   - {fileID: 1441677964}
   - {fileID: 1764065475}
   - {fileID: 1569073499}
+  - {fileID: 35758068}

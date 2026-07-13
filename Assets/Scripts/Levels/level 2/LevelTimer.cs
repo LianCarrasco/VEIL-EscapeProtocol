@@ -45,6 +45,9 @@ public class LevelTimer : MonoBehaviour
     {
         levelFinished = true;
 
+        PlayerPrefs.SetInt("NivelCompletado", 2);
+        PlayerPrefs.Save();
+
         SceneManager.LoadScene(winSceneName);
     }
 }

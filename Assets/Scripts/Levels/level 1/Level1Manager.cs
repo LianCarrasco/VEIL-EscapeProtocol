@@ -441,7 +441,8 @@ public class Level1Manager : MonoBehaviour
 
         Debug.Log("Nivel 1 completado.");
 
-        PlayerPrefs.SetInt("NivelActual", 1);
+        PlayerPrefs.SetInt("NivelCompletado", 1);
+        PlayerPrefs.Save();
         SceneManager.LoadScene("Win");
     }
 

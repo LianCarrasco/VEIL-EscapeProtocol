@@ -316,10 +316,8 @@ public class Level3Manager : MonoBehaviour
 
             bool wasVisible = enemyCameraVisibility[enemies[i]];
 
-            // Solo cuando cambia (llega o se va)
             if (shouldShow != wasVisible)
             {
-                AudioManager.instance.Interferencia();
 
                 enemyCameraVisibility[enemies[i]] = shouldShow;
             }
@@ -399,6 +397,12 @@ public class Level3Manager : MonoBehaviour
     {
         if (isLevelFinished)
         {
+            return;
+        }
+
+        if (isGeneratorDamaged)
+        {
+            Debug.Log("No puedes usar la tablet mientras el generador esté dañado.");
             return;
         }
 
@@ -751,6 +755,12 @@ public class Level3Manager : MonoBehaviour
 
     public void ToggleLeftLight()
     {
+        if (isGeneratorDamaged)
+        {
+            Debug.Log("No puedes usar la linterna.");
+            return;
+        }
+
         isLeftLightOn = !isLeftLightOn;
 
         if (isLeftLightOn)
@@ -780,6 +790,12 @@ public class Level3Manager : MonoBehaviour
 
     public void ToggleRightLight()
     {
+        if (isGeneratorDamaged)
+        {
+            Debug.Log("No puedes usar la linterna.");
+            return;
+        }
+
         isRightLightOn = !isRightLightOn;
 
         if (isRightLightOn)
@@ -879,6 +895,10 @@ public class Level3Manager : MonoBehaviour
         }
 
         ForceOpenDoors();
+        CloseTablet();
+        isLeftLightOn = false;
+        isRightLightOn = false;
+        UpdateLightVisuals();
 
         if (generatorAlertPanel != null)
         {
@@ -1002,7 +1022,8 @@ public class Level3Manager : MonoBehaviour
 
         Debug.Log("Ganaste el juego.");
 
-        PlayerPrefs.SetInt("NivelActual", 3);
+        PlayerPrefs.SetInt("NivelCompletado", 3);
+        PlayerPrefs.Save();
 
         SceneManager.LoadScene("Win");
     }
