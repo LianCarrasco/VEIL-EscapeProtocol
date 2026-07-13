@@ -3485,10 +3485,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.CanvasScaler
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 2560, y: 1440}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
@@ -4644,10 +4644,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AudioManager
   audioSource: {fileID: 1764065477}
+  "generadorDa\xF1adoSound": {fileID: 0}
   pantalla: {fileID: 8300000, guid: 3443e571cfd1f19479202d547b5aae74, type: 3}
   cambio_camara: {fileID: 8300000, guid: 283192fb33370c84890e969b33a953ee, type: 3}
   nariz_freddy: {fileID: 8300000, guid: 210c5b0713dfae942995016960303447, type: 3}
   sonidoNormal: {fileID: 8300000, guid: e136013c97383524dab8649eafa8a71f, type: 3}
+  sonidoScreamer: {fileID: 0}
+  generadorReparadoSound: {fileID: 0}
+  sonidoLinternaNivel2: {fileID: 0}
+  pasosIzquierda: {fileID: 0}
+  pasosDerecha: {fileID: 0}
+  pasosAtras: {fileID: 0}
+  sonidoPuerta: {fileID: 0}
+  linternaEncender: {fileID: 0}
+  linternaAnimatronico: {fileID: 0}
+  interferenciaCamara: {fileID: 0}
 --- !u!1 &1795642884
 GameObject:
   m_ObjectHideFlags: 0
