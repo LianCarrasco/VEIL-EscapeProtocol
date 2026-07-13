@@ -1,11 +1,20 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
 
+[System.Serializable]
+public class CameraRoomBackground
+{
+    public string roomID;
+    public Sprite backgroundSprite;
+}
+
 public class Level3Manager : MonoBehaviour
 {
+    private Dictionary<Level3Enemy, bool> enemyCameraVisibility = new Dictionary<Level3Enemy, bool>();
     [Header("Tiempo")]
     [SerializeField] private float levelDuration = 180f;
     [SerializeField] private TMP_Text timeText;
@@ -13,8 +22,8 @@ public class Level3Manager : MonoBehaviour
     [Header("Batería")]
     [SerializeField] private Slider batterySlider;
     [SerializeField] private float maxBattery = 100f;
-    [SerializeField] private float tabletBatteryDrainPerSecond = .25f;
-    [SerializeField] private float closedDoorDrainPerSecond = .6f;
+    [SerializeField] private float tabletBatteryDrainPerSecond = 0.75f;
+    [SerializeField] private float closedDoorDrainPerSecond = 1.50f;
 
     [Header("Tablet")]
     [SerializeField] private GameObject tabletPanel;
@@ -23,6 +32,11 @@ public class Level3Manager : MonoBehaviour
     [SerializeField] private TMP_Text cameraRoomText;
     [SerializeField] private GameObject soundButtonObject;
     [SerializeField] private string spawnRoomID = "Spawn";
+
+    [Header("Fondos de cámara")]
+    [SerializeField] private Image cameraBackgroundImage;
+    [SerializeField] private CameraRoomBackground[] cameraBackgrounds;
+
 
     [Header("Puertas")]
     [SerializeField] private RectTransform leftDoorVisual;
@@ -132,6 +146,7 @@ public class Level3Manager : MonoBehaviour
         for (int i = 0; i < enemies.Length; i++)
         {
             enemies[i].Initialize(this);
+            enemyCameraVisibility[enemies[i]] = false;
         }
 
         UpdateTimeUI();
@@ -195,13 +210,41 @@ public class Level3Manager : MonoBehaviour
             enemy.JumpscareVisual.SetActive(true);
         }
 
+        if (AudioManager.instance != null)
+        {
+            AudioManager.instance.Screamer();
+        }
+
         Debug.Log("Jumpscare de " + enemy.EnemyName);
 
         yield return new WaitForSeconds(jumpscareDuration);
 
         Debug.Log("Game Over: " + reason);
-        GameManager.GuardarNivelActual();
+        ButtonSounds.GuardarNivelActual();
         SceneManager.LoadScene("GameOver");
+    }
+
+    private void UpdateCameraBackground(string roomID)
+    {
+        if (cameraBackgroundImage == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < cameraBackgrounds.Length; i++)
+        {
+            if (cameraBackgrounds[i].roomID == roomID)
+            {
+                cameraBackgroundImage.sprite = cameraBackgrounds[i].backgroundSprite;
+                cameraBackgroundImage.enabled = true;
+                return;
+            }
+        }
+
+        cameraBackgroundImage.sprite = null;
+        cameraBackgroundImage.enabled = false;
+
+        Debug.Log("No hay fondo asignado para la cámara: " + roomID);
     }
 
     private bool CanUseDoors()
@@ -266,11 +309,22 @@ public class Level3Manager : MonoBehaviour
     {
         for (int i = 0; i < enemies.Length; i++)
         {
-            if (enemies[i].CameraVisual != null)
+            if (enemies[i].CameraVisual == null)
+                continue;
+
+            bool shouldShow = enemies[i].IsInRoom(currentCameraRoomID);
+
+            bool wasVisible = enemyCameraVisibility[enemies[i]];
+
+            // Solo cuando cambia (llega o se va)
+            if (shouldShow != wasVisible)
             {
-                bool shouldShow = enemies[i].IsInRoom(currentCameraRoomID);
-                enemies[i].CameraVisual.SetActive(shouldShow);
+                AudioManager.instance.Interferencia();
+
+                enemyCameraVisibility[enemies[i]] = shouldShow;
             }
+
+            enemies[i].CameraVisual.SetActive(shouldShow);
         }
     }
 
@@ -418,6 +472,7 @@ public class Level3Manager : MonoBehaviour
         {
             soundButtonObject.SetActive(roomID != spawnRoomID);
         }
+        UpdateCameraBackground(roomID);
         UpdateCameraEnemyVisuals();
 
         Debug.Log("Viendo cámara de habitación: " + roomID);
@@ -522,6 +577,11 @@ public class Level3Manager : MonoBehaviour
 
         bool closing = !isLeftDoorClosed;
 
+        if (AudioManager.instance != null)
+        {
+            AudioManager.instance.Puerta();
+        }
+
         Vector2 startPosition = leftDoorVisual.anchoredPosition;
         Vector2 targetPosition = closing ? leftDoorClosedPosition : leftDoorOpenPosition;
 
@@ -562,6 +622,11 @@ public class Level3Manager : MonoBehaviour
         isRightDoorMoving = true;
 
         bool closing = !isRightDoorClosed;
+
+        if (AudioManager.instance != null)
+        {
+            AudioManager.instance.Puerta();
+        }
 
         Vector2 startPosition = rightDoorVisual.anchoredPosition;
         Vector2 targetPosition = closing ? rightDoorClosedPosition : rightDoorOpenPosition;
@@ -687,12 +752,58 @@ public class Level3Manager : MonoBehaviour
     public void ToggleLeftLight()
     {
         isLeftLightOn = !isLeftLightOn;
+
+        if (isLeftLightOn)
+        {
+            bool enemyInHallway = false;
+
+            for (int i = 0; i < enemies.Length; i++)
+            {
+                if (enemies[i].IsInDoorHallway(DoorSide.Left))
+                {
+                    enemyInHallway = true;
+                    break;
+                }
+            }
+
+            if (AudioManager.instance != null)
+            {
+                if (enemyInHallway)
+                    AudioManager.instance.LinternaAnimatronico();
+                else
+                    AudioManager.instance.LinternaNormal();
+            }
+        }
+
         UpdateLightVisuals();
     }
 
     public void ToggleRightLight()
     {
         isRightLightOn = !isRightLightOn;
+
+        if (isRightLightOn)
+        {
+            bool enemyInHallway = false;
+
+            for (int i = 0; i < enemies.Length; i++)
+            {
+                if (enemies[i].IsInDoorHallway(DoorSide.Right))
+                {
+                    enemyInHallway = true;
+                    break;
+                }
+            }
+
+            if (AudioManager.instance != null)
+            {
+                if (enemyInHallway)
+                    AudioManager.instance.LinternaAnimatronico();
+                else
+                    AudioManager.instance.LinternaNormal();
+            }
+        }
+
         UpdateLightVisuals();
     }
 
@@ -761,6 +872,11 @@ public class Level3Manager : MonoBehaviour
         enemyAtGenerator = enemy;
         isGeneratorDamaged = true;
         generatorDamageTimer = generatorDeathTime;
+
+        if (AudioManager.instance != null)
+        {
+            AudioManager.instance.GeneradorDañado();
+        }
 
         ForceOpenDoors();
 
@@ -833,6 +949,11 @@ public class Level3Manager : MonoBehaviour
             enemyAtGenerator = null;
         }
 
+        if (AudioManager.instance != null)
+        {
+            AudioManager.instance.GeneradorReparado();
+        }
+
         Debug.Log("Generador reparado.");
     }
 
@@ -896,6 +1017,7 @@ public class Level3Manager : MonoBehaviour
         isLevelFinished = true;
 
         Debug.Log("Game Over: " + reason);
+        ButtonSounds.GuardarNivelActual();
         SceneManager.LoadScene("GameOver");
     }
 }

@@ -35,6 +35,8 @@ public class Level1Manager : MonoBehaviour
     [SerializeField] private Image generatorProgressImage;
     [SerializeField] private GameObject repairGeneratorButton;
     [SerializeField] private GameObject lightOffImage;
+    [SerializeField] private AudioSource generador_dañado;
+    [SerializeField] private AudioSource arreglado;
 
     private bool isRepairingGenerator;
 
@@ -297,6 +299,11 @@ public class Level1Manager : MonoBehaviour
     {
         isPowerOn = false;
 
+        if (generador_dañado != null)
+        {
+            generador_dañado.Play();
+        }
+
         CancelCurrentChargingTask();
 
         if (isTabletOpen)
@@ -396,6 +403,12 @@ public class Level1Manager : MonoBehaviour
 
         ScheduleNextPowerFail();
 
+        if (arreglado != null)
+        {
+            arreglado.Play();
+        }
+
+
         Debug.Log("Generador reparado. La luz volvió.");
     }
 
@@ -442,7 +455,7 @@ public class Level1Manager : MonoBehaviour
         isLevelFinished = true;
 
         Debug.Log("Game Over: " + reason);
-        GameManager.GuardarNivelActual();
+        ButtonSounds.GuardarNivelActual();
         SceneManager.LoadScene("GameOver");
     }
 

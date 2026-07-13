@@ -192,6 +192,8 @@ public class Level3Enemy : MonoBehaviour
 
     private void EnterGenerator()
     {
+        Debug.Log("ENTRO AL GENERADOR: " + enemyName);
+
         isAtGenerator = true;
 
         levelManager.OnEnemyDamagedGenerator(this);

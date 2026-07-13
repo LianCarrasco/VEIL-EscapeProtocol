@@ -71,6 +71,8 @@ public class Animatronic
 
 public class AnimatronicManager : MonoBehaviour
 {
+    private AudioManager audioManager;
+
     [Header("Vista actual del jugador")]
     [SerializeField] private ViewController viewController;
 
@@ -110,6 +112,8 @@ public class AnimatronicManager : MonoBehaviour
 
     private void Start()
     {
+        audioManager = AudioManager.instance;
+
         timer = surviveTime;
 
         RefreshTabletSensors();
@@ -189,6 +193,27 @@ public class AnimatronicManager : MonoBehaviour
         }
     }
 
+    private void PlayFootstepSound(AttackView view)
+    {
+        if (audioManager == null)
+            return;
+
+        switch (view)
+        {
+            case AttackView.Left:
+                audioManager.PasosIzquierda();
+                break;
+
+            case AttackView.Right:
+                audioManager.PasosDerecha();
+                break;
+
+            case AttackView.Back:
+                audioManager.PasosAtras();
+                break;
+        }
+    }
+
     private void UpdateAnimatronic(Animatronic anim)
     {
         if (anim.attacking)
@@ -219,6 +244,12 @@ public class AnimatronicManager : MonoBehaviour
         {
             anim.attacking = true;
             anim.attackTimer = 0f;
+
+            if (audioManager != null)
+            {
+                PlayFootstepSound(anim.attackView);
+            }
+
             return;
         }
 
@@ -272,11 +303,17 @@ public class AnimatronicManager : MonoBehaviour
         if (!anim.attacking) return;
 
         bool correctView =
+
             anim.attackView == AttackView.Left && currentView == RoomView.Left ||
             anim.attackView == AttackView.Right && currentView == RoomView.Right ||
             anim.attackView == AttackView.Back && currentView == RoomView.Back;
 
         if (!correctView) return;
+
+        if (audioManager != null)
+        {
+            PlayFootstepSound(anim.attackView);
+        }
 
         anim.attacking = false;
         anim.attackTimer = 0f;
@@ -453,24 +490,20 @@ public class AnimatronicManager : MonoBehaviour
         SetActiveSafe(blueAnimatronic.peekVisualRight, false);
         SetActiveSafe(blueAnimatronic.peekVisualBack, false);
 
-        if (playerCanvasRoot != null)
-        {
-            playerCanvasRoot.SetActive(false);
-        }
 
         if (killer.screamerPanel != null)
         {
             killer.screamerPanel.SetActive(true);
         }
 
-        if (screamerAudioSource != null && killer.screamerSound != null)
+        if (audioManager != null)
         {
-            screamerAudioSource.PlayOneShot(killer.screamerSound);
+            audioManager.Screamer();
         }
 
         yield return new WaitForSeconds(screamerDuration);
 
-        GameManager.GuardarNivelActual();
+        ButtonSounds.GuardarNivelActual();
         SceneManager.LoadScene(gameOverSceneName);
     }
 
@@ -478,7 +511,7 @@ public class AnimatronicManager : MonoBehaviour
     {
         gameEnded = true;
 
-        GameManager.GuardarNivelActual();
+        ButtonSounds.GuardarNivelActual();
 
         SceneManager.LoadScene(winSceneName);
     }
