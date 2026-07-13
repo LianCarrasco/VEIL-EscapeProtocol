@@ -24,9 +24,9 @@ public class WinManager : MonoBehaviour
 
     public void SiguienteNivel()
     {
+        Debug.Log("SIGUIENTE NIVEL PRESIONADO");
         StartCoroutine(CargarSiguienteNivel());
     }
-
     IEnumerator CargarSiguienteNivel()
     {
         clickSound.Play();
@@ -34,6 +34,8 @@ public class WinManager : MonoBehaviour
         yield return new WaitForSeconds(0.4f);
 
         string nivelActual = SceneManager.GetActiveScene().name;
+
+        Debug.Log("Escena actual: " + nivelActual);
 
         if (nivelActual == "Level1")
         {
@@ -44,7 +46,6 @@ public class WinManager : MonoBehaviour
             SceneManager.LoadScene("Level3");
         }
     }
-
 
     public void IrAlMenu()
     {
