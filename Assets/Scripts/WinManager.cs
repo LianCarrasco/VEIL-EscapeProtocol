@@ -1,63 +1,56 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using System.Collections;
 
 public class WinManager : MonoBehaviour
 {
     public AudioSource clickSound;
-
     public GameObject botonSiguienteNivel;
 
     void Start()
     {
-        // Si estamos en el nivel 3, ocultar botón siguiente nivel
-        if (SceneManager.GetActiveScene().name == "Level3")
-         {
-             botonSiguienteNivel.SetActive(false);
-         }
-         else
-         {
-             botonSiguienteNivel.SetActive(true);
-         }
+        int nivel = PlayerPrefs.GetInt("NivelCompletado");
+
+        // Si terminó Level3, ocultar botón
+        if (nivel == 3)
+        {
+            botonSiguienteNivel.SetActive(false);
+        }
+        else
+        {
+            botonSiguienteNivel.SetActive(true);
+        }
     }
+
 
     public void SiguienteNivel()
     {
-        Debug.Log("SIGUIENTE NIVEL PRESIONADO");
         StartCoroutine(CargarSiguienteNivel());
     }
+
+
     IEnumerator CargarSiguienteNivel()
     {
-        clickSound.Play();
+        if (clickSound != null)
+            clickSound.Play();
 
         yield return new WaitForSeconds(0.4f);
 
-        string nivelActual = SceneManager.GetActiveScene().name;
+        int nivel = PlayerPrefs.GetInt("NivelCompletado");
 
-        Debug.Log("Escena actual: " + nivelActual);
-
-        if (nivelActual == "Level1")
+        if (nivel == 1)
         {
             SceneManager.LoadScene("Level2");
         }
-        else if (nivelActual == "Level2")
+        else if (nivel == 2)
         {
             SceneManager.LoadScene("Level3");
         }
     }
 
+
     public void IrAlMenu()
     {
-        StartCoroutine(CargarMenu());
-    }
-
-    IEnumerator CargarMenu()
-    {
-        clickSound.Play();
-
-        yield return new WaitForSeconds(0.4f);
-
         SceneManager.LoadScene("MainMenu");
     }
 }
