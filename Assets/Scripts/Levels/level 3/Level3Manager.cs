@@ -891,7 +891,7 @@ public class Level3Manager : MonoBehaviour
 
         if (AudioManager.instance != null)
         {
-            AudioManager.instance.GeneradorDañado();
+            AudioManager.instance.GeneradorDanado();
         }
 
         ForceOpenDoors();

@@ -6,7 +6,7 @@ public class AudioManager : MonoBehaviour
 
     public AudioSource audioSource;
 
-    public AudioClip generadorDañadoSound;
+    public AudioClip generadorDanadoSound;
 
     public AudioClip pantalla;
     public AudioClip cambio_camara;
@@ -38,11 +38,11 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    public void GeneradorDañado()
+    public void GeneradorDanado()
     {
-        if (generadorDañadoSound != null)
+        if (generadorDanadoSound != null)
         {
-            audioSource.PlayOneShot(generadorDañadoSound);
+            audioSource.PlayOneShot(generadorDanadoSound);
         }
     }
 
@@ -60,13 +60,13 @@ public class AudioManager : MonoBehaviour
         audioSource.PlayOneShot(pantalla);
     }
 
-    // Botón cámara
+    // Botï¿½n cï¿½mara
     public void Camara()
     {
         audioSource.PlayOneShot(cambio_camara);
     }
 
-    // Botón llamar animatrónico
+    // Botï¿½n llamar animatrï¿½nico
     public void LlamarAnimatronico()
     {
         audioSource.PlayOneShot(nariz_freddy);
