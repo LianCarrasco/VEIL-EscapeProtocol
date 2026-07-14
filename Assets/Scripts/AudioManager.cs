@@ -25,6 +25,11 @@ public class AudioManager : MonoBehaviour
     public AudioClip linternaEncender;
     public AudioClip linternaAnimatronico;
 
+    void Start()
+    {
+        Debug.Log("AudioManager activo: " + gameObject.name);
+    }
+
     void Awake()
     {
         if (instance == null)

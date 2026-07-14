@@ -1,2 +1,26 @@
 fileFormatVersion: 2
 guid: 8a05ca0e2f2c2d843afd665562e72e00
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - audioSource: {instanceID: 0}
+  - generadorDanadoSound: {fileID: 8300000, guid: 64e74de89fcdd6b438eb4938b5ba1d2f, type: 3}
+  - pantalla: {instanceID: 0}
+  - cambio_camara: {instanceID: 0}
+  - nariz_freddy: {instanceID: 0}
+  - sonidoNormal: {instanceID: 0}
+  - sonidoScreamer: {instanceID: 0}
+  - generadorReparadoSound: {instanceID: 0}
+  - sonidoLinternaNivel2: {instanceID: 0}
+  - pasosIzquierda: {instanceID: 0}
+  - pasosDerecha: {instanceID: 0}
+  - pasosAtras: {instanceID: 0}
+  - sonidoPuerta: {instanceID: 0}
+  - linternaEncender: {instanceID: 0}
+  - linternaAnimatronico: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

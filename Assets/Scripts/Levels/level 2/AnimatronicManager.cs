@@ -61,9 +61,10 @@ public class Animatronic
     [Tooltip("Sprite/GameObject que se activa cuando este animatronico esta atacando desde la vista TRASERA")]
     public GameObject peekVisualBack;
 
-    [HideInInspector] public bool branchResolved = false;
+    [HideInInspector] public bool takingBranch = false;
+    [HideInInspector] public bool usingBranchA = false;
+    [HideInInspector] public int branchIndex = 0;
     [HideInInspector] public int routeIndex = 0;
-    [HideInInspector] public int previousRouteIndex = 0;
     [HideInInspector] public float moveTimer = 0f;
     [HideInInspector] public float attackTimer = 0f;
     [HideInInspector] public bool attacking = false;
@@ -238,59 +239,74 @@ public class AnimatronicManager : MonoBehaviour
 
     private void MoveForward(Animatronic anim)
     {
-        // Si ya llego a su camara final (la ultima del recorrido) y se quedo un ciclo visible ahi,
-        // en este toque recien entra en estado de ataque (se vuelve invisible)
-        if (anim.routeIndex == anim.route.Length - 1)
+        // Si está recorriendo una rama
+        if (anim.takingBranch)
         {
+            int[] branch = anim.usingBranchA ?
+                anim.routeContinuationA :
+                anim.routeContinuationB;
+
+            if (branch == null || branch.Length == 0)
+            {
+                Debug.LogWarning(anim.name + " no tiene una ruta de rama válida.");
+                anim.attacking = true;
+                anim.attackTimer = 0f;
+                return;
+            }
+
+            // Si todavía hay cámaras por recorrer
+            if (anim.branchIndex < branch.Length - 1)
+            {
+                anim.branchIndex++;
+                return;
+            }
+
+            // Llegó al final de la rama
             anim.attacking = true;
             anim.attackTimer = 0f;
 
-            if (audioManager != null)
-            {
-                PlayFootstepSound(anim.attackView);
-            }
+            anim.attackView = anim.usingBranchA ?
+                anim.attackViewA :
+                anim.attackViewB;
+
+            PlayFootstepSound(anim.attackView);
 
             return;
         }
 
-        anim.previousRouteIndex = anim.routeIndex;
+        // Movimiento normal del camino común
         anim.routeIndex++;
 
-        // Justo despues de moverse: si acaba de llegar al final del tramo comun
-        // y tiene bifurcacion sin resolver, elige el camino AQUI (antes de decidir si ataca)
-        TryResolveBranch(anim);
-    }
-
-    //BIFURCACION DE RUTA
-
-    private void TryResolveBranch(Animatronic anim)
-    {
-        if (!anim.hasBranch || anim.branchResolved) return;
-
-        // Solo se resuelve justo cuando acaba de llegar al final del tramo comun
-        if (anim.routeIndex != anim.route.Length - 1) return;
-
-        bool takeA = Random.value < anim.branchChanceA;
-
-        int[] continuation = takeA ? anim.routeContinuationA : anim.routeContinuationB;
-        AttackView chosenView = takeA ? anim.attackViewA : anim.attackViewB;
-
-        if (continuation != null && continuation.Length > 0)
+        // Llegó al final del tramo común
+        if (anim.routeIndex >= anim.route.Length - 1)
         {
-            int[] merged = new int[anim.route.Length + continuation.Length];
-            anim.route.CopyTo(merged, 0);
-            continuation.CopyTo(merged, anim.route.Length);
+            // Si tiene bifurcación decide ahora
+            if (anim.hasBranch)
+            {
+                anim.takingBranch = true;
 
-            anim.route = merged;
-            anim.attackView = chosenView;
+                anim.usingBranchA =
+                    Random.value < anim.branchChanceA;
+
+                anim.branchIndex = 0;
+
+                Debug.Log(anim.name +
+                (anim.usingBranchA ?
+                " eligió Camino A (Back)" :
+                " eligió Camino B (Left)"));
+
+                return;
+            }
+
+            // Si no tiene bifurcación ataca normal
+            anim.attacking = true;
+            anim.attackTimer = 0f;
+
+            PlayFootstepSound(anim.attackView);
         }
-
-        anim.branchResolved = true;
-
-        Debug.Log(anim.name + " eligio el Camino " + (takeA ? "A (" + anim.attackViewA + ")" : "B (" + anim.attackViewB + ")"));
     }
 
-    public void UseFlashlight(RoomView currentView)
+    public void UseFlashlight(RoomView currentView) 
     {
         if (isDying) return;
 
@@ -317,7 +333,13 @@ public class AnimatronicManager : MonoBehaviour
 
         anim.attacking = false;
         anim.attackTimer = 0f;
-        anim.routeIndex = anim.previousRouteIndex;
+
+        anim.routeIndex = 0;
+
+        anim.takingBranch = false;
+        anim.branchIndex = 0;
+        anim.usingBranchA = false;
+
         anim.moveTimer = 0f;
     }
 
@@ -393,7 +415,6 @@ public class AnimatronicManager : MonoBehaviour
         {
             if (anim.route[i] == cameraNumber)
             {
-                anim.previousRouteIndex = anim.routeIndex;
                 anim.routeIndex = i;
                 anim.moveTimer = 0f;
 
@@ -411,6 +432,9 @@ public class AnimatronicManager : MonoBehaviour
 
         if (other.attacking) return false;
         if (other.route == null || other.route.Length == 0) return false;
+
+        if (other.routeIndex < 0 || other.routeIndex >= other.route.Length)
+            return false;
 
         int otherCamera = other.route[other.routeIndex];
         return otherCamera == cameraNumber;
@@ -441,7 +465,36 @@ public class AnimatronicManager : MonoBehaviour
         if (anim.attacking) return;
         if (anim.route == null || anim.route.Length == 0) return;
 
-        int cameraNumber = anim.route[anim.routeIndex];
+        int cameraNumber = -1;
+
+        if (anim.takingBranch)
+        {
+            int[] branch = anim.usingBranchA ?
+                anim.routeContinuationA :
+                anim.routeContinuationB;
+
+            if (branch == null || branch.Length == 0) return;
+
+            if (anim.branchIndex < 0 || anim.branchIndex >= branch.Length)
+            {
+                Debug.LogWarning(anim.name + " tiene branchIndex fuera de rango: " + anim.branchIndex);
+                return;
+            }
+
+            cameraNumber = branch[anim.branchIndex];
+        }
+        else
+        {
+            if (anim.routeIndex < 0 || anim.routeIndex >= anim.route.Length)
+            {
+                Debug.LogWarning(anim.name + " tiene routeIndex fuera de rango: " + anim.routeIndex);
+                return;
+            }
+
+            cameraNumber = anim.route[anim.routeIndex];
+        }
+
+
         int buttonIndex = cameraNumber - 1;
 
         if (buttonIndex >= 0 && buttonIndex < cameraButtons.Length)
