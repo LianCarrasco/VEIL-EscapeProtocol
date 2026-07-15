@@ -11,6 +11,7 @@ public class AudioManager : MonoBehaviour
     public AudioClip pantalla;
     public AudioClip cambio_camara;
     public AudioClip nariz_freddy;
+    public AudioClip robotcorriendo;
     public AudioClip sonidoNormal;
   
     public AudioClip sonidoScreamer;
@@ -25,26 +26,19 @@ public class AudioManager : MonoBehaviour
     public AudioClip linternaEncender;
     public AudioClip linternaAnimatronico;
 
-    void Start()
-    {
-        Debug.Log("AudioManager activo: " + gameObject.name);
-    }
-
     void Awake()
     {
-        if (instance == null)
-        {
             instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+    }
+
+    public void RobotCorriendo()
+    {
+        audioSource.PlayOneShot(robotcorriendo);
     }
 
     public void GeneradorDanado()
     {
+        Debug.Log("GeneradorDanado llamado");
         if (generadorDanadoSound != null)
         {
             audioSource.PlayOneShot(generadorDanadoSound);
@@ -53,6 +47,7 @@ public class AudioManager : MonoBehaviour
 
     public void GeneradorReparado()
     {
+        Debug.Log("GeneradorReparado llamado");
         if (generadorReparadoSound != null)
         {
             audioSource.PlayOneShot(generadorReparadoSound);

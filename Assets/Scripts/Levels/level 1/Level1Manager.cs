@@ -35,8 +35,6 @@ public class Level1Manager : MonoBehaviour
     [SerializeField] private Image generatorProgressImage;
     [SerializeField] private GameObject repairGeneratorButton;
     [SerializeField] private GameObject lightOffImage;
-    [SerializeField] private AudioSource generador_dañado;
-    [SerializeField] private AudioSource arreglado;
 
     private bool isRepairingGenerator;
 
@@ -299,9 +297,9 @@ public class Level1Manager : MonoBehaviour
     {
         isPowerOn = false;
 
-        if (generador_dañado != null)
+        if (AudioManager.instance != null)
         {
-            generador_dañado.Play();
+            AudioManager.instance.GeneradorDanado();
         }
 
         CancelCurrentChargingTask();
@@ -403,11 +401,10 @@ public class Level1Manager : MonoBehaviour
 
         ScheduleNextPowerFail();
 
-        if (arreglado != null)
+        if (AudioManager.instance != null)
         {
-            arreglado.Play();
+            AudioManager.instance.GeneradorReparado();
         }
-
 
         Debug.Log("Generador reparado. La luz volvió.");
     }

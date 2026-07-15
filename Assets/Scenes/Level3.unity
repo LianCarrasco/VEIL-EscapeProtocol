@@ -491,7 +491,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 114275011}
         m_TargetAssemblyTypeName: AudioManager, Assembly-CSharp
         m_MethodName: Camara
         m_Mode: 1
@@ -917,6 +917,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 76792508}
   m_CullTransparentMesh: 1
+--- !u!114 &114275011 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2249741995546485608, guid: 3b641a9ae1c71b246845193673ef973e, type: 3}
+  m_PrefabInstance: {fileID: 877625230}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a05ca0e2f2c2d843afd665562e72e00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudioManager
 --- !u!1 &129423995
 GameObject:
   m_ObjectHideFlags: 0
@@ -1092,7 +1103,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 114275011}
         m_TargetAssemblyTypeName: AudioManager, Assembly-CSharp
         m_MethodName: Camara
         m_Mode: 1
@@ -1396,7 +1407,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 114275011}
         m_TargetAssemblyTypeName: AudioManager, Assembly-CSharp
         m_MethodName: Camara
         m_Mode: 1
@@ -2164,7 +2175,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &320467104
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2177,15 +2188,15 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 670556361}
   - {fileID: 1760855506}
   - {fileID: 697999563}
+  - {fileID: 670556361}
   m_Father: {fileID: 1494504568}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 24.821045, y: -171.23999}
-  m_SizeDelta: {x: -879.094, y: -342.48}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 24.821045, y: -136.81}
+  m_SizeDelta: {x: 1680.906, y: 1097.52}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &320467105
 MonoBehaviour:
@@ -2395,7 +2406,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 114275011}
         m_TargetAssemblyTypeName: AudioManager, Assembly-CSharp
         m_MethodName: NormalInter
         m_Mode: 1
@@ -3118,7 +3129,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 649.41, y: 467.67}
+  m_AnchoredPosition: {x: 663.31, y: 463}
   m_SizeDelta: {x: 160.42, y: 40.298}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &670556362
@@ -3177,7 +3188,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 114275011}
         m_TargetAssemblyTypeName: AudioManager, Assembly-CSharp
         m_MethodName: Boton
         m_Mode: 1
@@ -3984,7 +3995,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 114275011}
         m_TargetAssemblyTypeName: AudioManager, Assembly-CSharp
         m_MethodName: Camara
         m_Mode: 1
@@ -4159,7 +4170,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 114275011}
         m_TargetAssemblyTypeName: AudioManager, Assembly-CSharp
         m_MethodName: NormalInter
         m_Mode: 1
@@ -4346,6 +4357,67 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 865800787}
   m_CullTransparentMesh: 1
+--- !u!1001 &877625230
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2399422492432365986, guid: 3b641a9ae1c71b246845193673ef973e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1213.3881
+      objectReference: {fileID: 0}
+    - target: {fileID: 2399422492432365986, guid: 3b641a9ae1c71b246845193673ef973e, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 766.5924
+      objectReference: {fileID: 0}
+    - target: {fileID: 2399422492432365986, guid: 3b641a9ae1c71b246845193673ef973e, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2399422492432365986, guid: 3b641a9ae1c71b246845193673ef973e, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2399422492432365986, guid: 3b641a9ae1c71b246845193673ef973e, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2399422492432365986, guid: 3b641a9ae1c71b246845193673ef973e, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2399422492432365986, guid: 3b641a9ae1c71b246845193673ef973e, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2399422492432365986, guid: 3b641a9ae1c71b246845193673ef973e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2399422492432365986, guid: 3b641a9ae1c71b246845193673ef973e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2399422492432365986, guid: 3b641a9ae1c71b246845193673ef973e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7527489243996171383, guid: 3b641a9ae1c71b246845193673ef973e, type: 3}
+      propertyPath: m_Name
+      value: AudioManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 7527489243996171383, guid: 3b641a9ae1c71b246845193673ef973e, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 3b641a9ae1c71b246845193673ef973e, type: 3}
 --- !u!1 &950661726
 GameObject:
   m_ObjectHideFlags: 0
@@ -5145,7 +5217,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 114275011}
         m_TargetAssemblyTypeName: AudioManager, Assembly-CSharp
         m_MethodName: Camara
         m_Mode: 1
@@ -5557,7 +5629,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 114275011}
         m_TargetAssemblyTypeName: AudioManager, Assembly-CSharp
         m_MethodName: Camara
         m_Mode: 1
@@ -5944,7 +6016,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 114275011}
         m_TargetAssemblyTypeName: AudioManager, Assembly-CSharp
         m_MethodName: NormalInter
         m_Mode: 1
@@ -6079,7 +6151,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 114275011}
         m_TargetAssemblyTypeName: AudioManager, Assembly-CSharp
         m_MethodName: Camara
         m_Mode: 1
@@ -6391,7 +6463,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 114275011}
         m_TargetAssemblyTypeName: AudioManager, Assembly-CSharp
         m_MethodName: NormalInter
         m_Mode: 1
@@ -6975,7 +7047,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 114275011}
         m_TargetAssemblyTypeName: AudioManager, Assembly-CSharp
         m_MethodName: Camara
         m_Mode: 1
@@ -7399,7 +7471,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 114275011}
         m_TargetAssemblyTypeName: AudioManager, Assembly-CSharp
         m_MethodName: Camara
         m_Mode: 1
@@ -7713,7 +7785,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 114275011}
         m_TargetAssemblyTypeName: AudioManager, Assembly-CSharp
         m_MethodName: NormalInter
         m_Mode: 1
@@ -8503,7 +8575,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 114275011}
         m_TargetAssemblyTypeName: AudioManager, Assembly-CSharp
         m_MethodName: Boton
         m_Mode: 1
@@ -8649,7 +8721,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 114275011}
         m_TargetAssemblyTypeName: AudioManager, Assembly-CSharp
         m_MethodName: LlamarAnimatronico
         m_Mode: 1
@@ -8835,7 +8907,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 114275011}
         m_TargetAssemblyTypeName: AudioManager, Assembly-CSharp
         m_MethodName: Camara
         m_Mode: 1
@@ -9347,6 +9419,7 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1575133345}
+  - {fileID: 877625230}
   - {fileID: 1494504568}
   - {fileID: 730903419}
   - {fileID: 1764260909}
